@@ -112,3 +112,5 @@ All committed pre-event artifacts are empty templates, protocol documents, repos
 | 18 | In-event | [Reserved] | | | Pending |
 | 19 | In-event | [Reserved] | | | Pending |
 | 20 | In-event | [Reserved] | | | Pending |
+| 9 | Pre-event | Tree aligned to `git ls-files`: root `data_feasibility_ledger.csv` removed (merged into `results/diagnostics.csv` section `data_feasibility_ledger`); `figures/` and `demo/` use `.gitkeep` placeholders; real media artifacts produced in-event | `.gitkeep` is the conventional marker for directories whose content arrives later; zero-byte media placeholders are intentionally not committed | P1 | Locked |
+| 10 | Pre-event | `pitch.md` future-work section reframed as explicit out-of-scope with protocol citations | Prevent appearance of scope creep; protocol already names these as future work | P1 | Locked |

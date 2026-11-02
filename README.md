@@ -94,10 +94,11 @@ Romarinova-AI/
 │ ├── api/
 │ └── frontend/
 ├── figures/
-│ ├── pipeline_diagram.png
-│ └── sensitivity_overlap.png
+│   └── .gitkeep              # pipeline_diagram.png and sensitivity_overlap.png produced in-event
 └── demo/
-└── final_demo_screencast.mp4
+    └── .gitkeep              # final_demo_screencast.mp4 recorded in-event
+
+> `.gitkeep` files mark directories whose artifacts are produced in-event. Zero-byte media placeholders are intentionally not committed.
 
 `scripts/build_artifacts.py` is the single source of truth generator in-event. `results/primary_shortlist_compound_level.csv` defines U and is the primary traceability artifact.
 
