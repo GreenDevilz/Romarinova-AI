@@ -1,0 +1,10 @@
+rdkit
+scikit-learn
+xgboost
+pandas
+numpy
+fastapi
+uvicorn
+plotly
+sqlalchemy
+jupyter

@@ -1,0 +1,1 @@
+split,model,pr_auc,pr_auc_ci_low,pr_auc_ci_high,roc_auc,ef10,ef10_bin_positives,top_recovery,top_recovery_mode,n_actives,n_inactives,n_scaffold_groups,largest_scaffold_group,ci_flag,ef_flag,top_recovery_flag,notes

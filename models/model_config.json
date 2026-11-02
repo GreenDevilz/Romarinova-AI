@@ -1,0 +1,8 @@
+{
+  "schema_version": "0.0.0-placeholder",
+  "description": "Schema-only placeholder. Populated after model freeze.",
+  "features": {},
+  "xgb": {},
+  "rf": {},
+  "selected": {}
+}

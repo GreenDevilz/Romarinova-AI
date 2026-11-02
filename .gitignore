@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.ipynb_checkpoints/
+
+# Node / frontend
+node_modules/
+dist/
+.vite/
+
+# Data / results (keep placeholders; ignore real data)
+data/features/*
+!data/features/.gitkeep
+results/results_store.sqlite
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Demo binary
+demo/*.mp4
+!demo/final_demo_screencast.mp4
