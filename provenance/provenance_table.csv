@@ -1,1 +1,65 @@
-compound_id,compound_name,cultivar_source,source_publication,evidence_level,structure_source,inchikey,notes
+compound_id,compound_name,cultivar_source,cultivar_evidence_level,literature_evidence_level,source_publication,source_locator,structure_status,structure_source,structure_source_record_id,inchikey
+1_8_cineole,"1,8-Cineole",var. typicus,identified,none,"Zaouli et al., 2022 (PLOS ONE)",Table 2,defined,PubChem,2758,WEEGYLXZBRQIMU-UHFFFAOYSA-N
+1_8_cineole,"1,8-Cineole",var. troglodytorum,identified,none,"Zaouli et al., 2022 (PLOS ONE)",Table 2,defined,PubChem,2758,WEEGYLXZBRQIMU-UHFFFAOYSA-N
+1_8_cineole,"1,8-Cineole","1,8-cineole/camphor/alpha-pinene chemotype",identified,none,"Ben Jemia et al., 2019 (S. Afr. J. Bot.)",Abstract,defined,PubChem,2758,WEEGYLXZBRQIMU-UHFFFAOYSA-N
+camphor,Camphor,var. typicus,identified,none,"Zaouli et al., 2022 (PLOS ONE)",Table 2,defined,PubChem,2537,DSSYKIVIOFKYAU-UHFFFAOYSA-N
+camphor,Camphor,var. troglodytorum,identified,none,"Zaouli et al., 2022 (PLOS ONE)",Table 2,defined,PubChem,2537,DSSYKIVIOFKYAU-UHFFFAOYSA-N
+camphor,Camphor,"1,8-cineole/camphor/alpha-pinene chemotype",identified,none,"Ben Jemia et al., 2019 (S. Afr. J. Bot.)",Abstract,defined,PubChem,2537,DSSYKIVIOFKYAU-UHFFFAOYSA-N
+alpha_pinene,alpha-Pinene,var. typicus,identified,none,"Zaouli et al., 2022 (PLOS ONE)",Table 2,defined,PubChem,82227,GRWFGVWFFZKLTI-RKDXNWHRSA-N
+alpha_pinene,alpha-Pinene,var. troglodytorum,identified,none,"Zaouli et al., 2022 (PLOS ONE)",Table 2,defined,PubChem,82227,GRWFGVWFFZKLTI-RKDXNWHRSA-N
+alpha_pinene,alpha-Pinene,"1,8-cineole/camphor/alpha-pinene chemotype",identified,none,"Ben Jemia et al., 2019 (S. Afr. J. Bot.)",Abstract,defined,PubChem,82227,GRWFGVWFFZKLTI-RKDXNWHRSA-N
+borneol,Borneol,var. typicus,identified,none,"Zaouli et al., 2022 (PLOS ONE)",Table 2,defined,PubChem,1201518,DTGKSKDOIYIVQL-QXFUBDJGSA-N
+borneol,Borneol,var. troglodytorum,identified,none,"Zaouli et al., 2022 (PLOS ONE)",Table 2,defined,PubChem,1201518,DTGKSKDOIYIVQL-QXFUBDJGSA-N
+borneol,Borneol,"1,8-cineole/camphor/alpha-pinene chemotype",identified,none,"Ben Jemia et al., 2019 (S. Afr. J. Bot.)",Abstract,defined,PubChem,1201518,DTGKSKDOIYIVQL-QXFUBDJGSA-N
+camphene,Camphene,var. typicus,identified,none,"Zaouli et al., 2022 (PLOS ONE)",Table 2,defined,PubChem,6616,CRPUJAZIXJMDBK-UHFFFAOYSA-N
+camphene,Camphene,var. troglodytorum,identified,none,"Zaouli et al., 2022 (PLOS ONE)",Table 2,defined,PubChem,6616,CRPUJAZIXJMDBK-UHFFFAOYSA-N
+camphene,Camphene,"1,8-cineole/camphor/alpha-pinene chemotype",identified,none,"Ben Jemia et al., 2019 (S. Afr. J. Bot.)",Abstract,defined,PubChem,6616,CRPUJAZIXJMDBK-UHFFFAOYSA-N
+myrcene,Myrcene,var. typicus,identified,none,"Zaouli et al., 2022 (PLOS ONE)",Table 2,defined,PubChem,31253,UAHWPYUMFXYFJY-UHFFFAOYSA-N
+myrcene,Myrcene,var. troglodytorum,identified,none,"Zaouli et al., 2022 (PLOS ONE)",Table 2,defined,PubChem,31253,UAHWPYUMFXYFJY-UHFFFAOYSA-N
+p_cymene,p-Cymene,var. typicus,identified,none,"Zaouli et al., 2022 (PLOS ONE)",Table 2,defined,PubChem,7463,HFPZCAJZSCWRBC-UHFFFAOYSA-N
+p_cymene,p-Cymene,var. troglodytorum,identified,none,"Zaouli et al., 2022 (PLOS ONE)",Table 2,defined,PubChem,7463,HFPZCAJZSCWRBC-UHFFFAOYSA-N
+alpha_phellandrene,alpha-Phellandrene,var. typicus,identified,none,"Zaouli et al., 2022 (PLOS ONE)",Table 2,defined,PubChem,7460,OGLDWXZKYODSOB-UHFFFAOYSA-N
+alpha_phellandrene,alpha-Phellandrene,var. troglodytorum,identified,none,"Zaouli et al., 2022 (PLOS ONE)",Table 2,defined,PubChem,7460,OGLDWXZKYODSOB-UHFFFAOYSA-N
+gamma_terpinene,gamma-Terpinene,var. typicus,identified,none,"Zaouli et al., 2022 (PLOS ONE)",Table 2,defined,PubChem,7461,YKFLAYDHMOASIY-UHFFFAOYSA-N
+gamma_terpinene,gamma-Terpinene,var. troglodytorum,identified,none,"Zaouli et al., 2022 (PLOS ONE)",Table 2,defined,PubChem,7461,YKFLAYDHMOASIY-UHFFFAOYSA-N
+alpha_terpinolene,alpha-Terpinolene,var. typicus,identified,none,"Zaouli et al., 2022 (PLOS ONE)",Table 2,defined,PubChem,5788,MOYAFQVGZZPNRA-UHFFFAOYSA-N
+alpha_terpinolene,alpha-Terpinolene,var. troglodytorum,identified,none,"Zaouli et al., 2022 (PLOS ONE)",Table 2,defined,PubChem,5788,MOYAFQVGZZPNRA-UHFFFAOYSA-N
+alpha_humulene,alpha-Humulene,var. typicus,identified,none,"Zaouli et al., 2022 (PLOS ONE)",Table 2,defined,PubChem,5281520,FAMPSKZZVDUYOS-HRGUGZIWSA-N
+alpha_humulene,alpha-Humulene,var. troglodytorum,identified,none,"Zaouli et al., 2022 (PLOS ONE)",Table 2,defined,PubChem,5281520,FAMPSKZZVDUYOS-HRGUGZIWSA-N
+alpha_amorphene,alpha-Amorphene,var. typicus,identified,none,"Zaouli et al., 2022 (PLOS ONE)",Table 2,defined,PubChem,12306052,QMAYBMKBYCGXDH-UHFFFAOYSA-N
+alpha_amorphene,alpha-Amorphene,var. troglodytorum,identified,none,"Zaouli et al., 2022 (PLOS ONE)",Table 2,defined,PubChem,12306052,QMAYBMKBYCGXDH-UHFFFAOYSA-N
+delta_cadinene,delta-Cadinene,var. typicus,identified,none,"Zaouli et al., 2022 (PLOS ONE)",Table 2,defined,PubChem,12306053,FUCYIEXQVQJBKY-ZFWWWQNUSA-N
+delta_cadinene,delta-Cadinene,var. troglodytorum,identified,none,"Zaouli et al., 2022 (PLOS ONE)",Table 2,defined,PubChem,12306053,FUCYIEXQVQJBKY-ZFWWWQNUSA-N
+caryophyllene_oxide,Caryophyllene oxide,var. typicus,identified,none,"Zaouli et al., 2022 (PLOS ONE)",Table 2,defined,PubChem,1742211,NVEQFIOZRFFVFW-RGCMKSIDSA-N
+caryophyllene_oxide,Caryophyllene oxide,var. troglodytorum,identified,none,"Zaouli et al., 2022 (PLOS ONE)",Table 2,defined,PubChem,1742211,NVEQFIOZRFFVFW-RGCMKSIDSA-N
+gamma_eudesmol,gamma-Eudesmol,var. typicus,identified,none,"Zaouli et al., 2022 (PLOS ONE)",Table 2,defined,PubChem,6432662,WMOPMQRJLLIEJV-IUODEOHRSA-N
+gamma_eudesmol,gamma-Eudesmol,var. troglodytorum,identified,none,"Zaouli et al., 2022 (PLOS ONE)",Table 2,defined,PubChem,6432662,WMOPMQRJLLIEJV-IUODEOHRSA-N
+alpha_elemene,alpha-Elemene,var. typicus,identified,none,"Zaouli et al., 2022 (PLOS ONE)",Table 2,defined,PubChem,6918391,QDUJKDRUFBJYSQ-UHFFFAOYSA-N
+alpha_elemene,alpha-Elemene,var. troglodytorum,identified,none,"Zaouli et al., 2022 (PLOS ONE)",Table 2,defined,PubChem,6918391,QDUJKDRUFBJYSQ-UHFFFAOYSA-N
+alpha_eudesmol,alpha-Eudesmol,var. typicus,identified,none,"Zaouli et al., 2022 (PLOS ONE)",Table 2,defined,PubChem,5317269,FCSRUSQUAVXUKK-VNHYZAJKSA-N
+alpha_eudesmol,alpha-Eudesmol,var. troglodytorum,identified,none,"Zaouli et al., 2022 (PLOS ONE)",Table 2,defined,PubChem,5317269,FCSRUSQUAVXUKK-VNHYZAJKSA-N
+beta_pinene,beta-Pinene,var. typicus,identified,none,"Yeddes et al., 2018 (J. Essent. Oil Bear. Pl.)",Abstract,defined,PubChem,440967,WTARULDDTDQWMU-IUCAKERBSA-N
+beta_pinene,beta-Pinene,var. troglodytorum,identified,none,"Yeddes et al., 2018 (J. Essent. Oil Bear. Pl.)",Abstract,defined,PubChem,440967,WTARULDDTDQWMU-IUCAKERBSA-N
+limonene,Limonene,var. typicus,identified,none,"Marzouk et al., 2006 (J. Food Agric. Environ.)",Abstract,defined,PubChem,440917,XMGQYMWWDOXHJM-SNVBAGLBSA-N
+limonene,Limonene,var. troglodytorum,identified,none,"Marzouk et al., 2006 (J. Food Agric. Environ.)",Abstract,defined,PubChem,440917,XMGQYMWWDOXHJM-SNVBAGLBSA-N
+linalool,Linalool,var. typicus,identified,none,"Marzouk et al., 2006 (J. Food Agric. Environ.)",Abstract,defined,PubChem,443158,CDOSHBSSFJOMGT-JTQLQIEISA-N
+linalool,Linalool,var. troglodytorum,identified,none,"Marzouk et al., 2006 (J. Food Agric. Environ.)",Abstract,defined,PubChem,443158,CDOSHBSSFJOMGT-JTQLQIEISA-N
+terpinen_4_ol,Terpinen-4-ol,var. typicus,identified,none,"Marzouk et al., 2006 (J. Food Agric. Environ.)",Abstract,defined,PubChem,11230,WRYLYDPHFGVWKC-UHFFFAOYSA-N
+terpinen_4_ol,Terpinen-4-ol,var. troglodytorum,identified,none,"Marzouk et al., 2006 (J. Food Agric. Environ.)",Abstract,defined,PubChem,11230,WRYLYDPHFGVWKC-UHFFFAOYSA-N
+alpha_terpineol,alpha-Terpineol,var. typicus,identified,none,"Marzouk et al., 2006 (J. Food Agric. Environ.)",Abstract,defined,PubChem,17100,WUOACPNHFRMFPN-UHFFFAOYSA-N
+alpha_terpineol,alpha-Terpineol,var. troglodytorum,identified,none,"Marzouk et al., 2006 (J. Food Agric. Environ.)",Abstract,defined,PubChem,17100,WUOACPNHFRMFPN-UHFFFAOYSA-N
+verbenone,Verbenone,var. typicus,identified,none,"Marzouk et al., 2006 (J. Food Agric. Environ.)",Abstract,defined,PubChem,92874,DCSCXTJOXBUFGB-JGVFFNPUSA-N
+verbenone,Verbenone,var. troglodytorum,identified,none,"Marzouk et al., 2006 (J. Food Agric. Environ.)",Abstract,defined,PubChem,92874,DCSCXTJOXBUFGB-JGVFFNPUSA-N
+bornyl_acetate,Bornyl acetate,var. typicus,identified,none,"Marzouk et al., 2006 (J. Food Agric. Environ.)",Abstract,defined,PubChem,44630108,KGEKLUUHTZCSIP-HOSYDEDBSA-N
+bornyl_acetate,Bornyl acetate,var. troglodytorum,identified,none,"Marzouk et al., 2006 (J. Food Agric. Environ.)",Abstract,defined,PubChem,44630108,KGEKLUUHTZCSIP-HOSYDEDBSA-N
+beta_caryophyllene,beta-Caryophyllene,var. typicus,identified,none,"Marzouk et al., 2006 (J. Food Agric. Environ.)",Abstract,defined,PubChem,5281515,NPNUFJAVOOONJE-GFUGXAQUSA-N
+beta_caryophyllene,beta-Caryophyllene,var. troglodytorum,identified,none,"Marzouk et al., 2006 (J. Food Agric. Environ.)",Abstract,defined,PubChem,5281515,NPNUFJAVOOONJE-GFUGXAQUSA-N
+rosmarinic_acid,Rosmarinic acid,var. typicus,identified,none,"Hcini et al., 2022 (IntechOpen)",Tunisian rosemary extract (HPLC),defined,PubChem,5281792,DOUMFZQKYFQNTF-WUTVXBCWSA-N
+rosmarinic_acid,Rosmarinic acid,var. troglodytorum,identified,none,"Hcini et al., 2022 (IntechOpen)",Tunisian rosemary extract (HPLC),defined,PubChem,5281792,DOUMFZQKYFQNTF-WUTVXBCWSA-N
+rosmarinic_acid,Rosmarinic acid,"1,8-cineole/camphor/alpha-pinene chemotype",identified,none,"Hcini et al., 2022 (IntechOpen)",Tunisian rosemary extract (HPLC),defined,PubChem,5281792,DOUMFZQKYFQNTF-WUTVXBCWSA-N
+carnosic_acid,Carnosic acid,var. typicus,identified,none,"Hcini et al., 2022 (IntechOpen)",Tunisian rosemary extract (HPLC),defined,PubChem,65126,QRYRORQUOLYVBU-VBKZILBWSA-N
+carnosic_acid,Carnosic acid,var. troglodytorum,identified,none,"Hcini et al., 2022 (IntechOpen)",Tunisian rosemary extract (HPLC),defined,PubChem,65126,QRYRORQUOLYVBU-VBKZILBWSA-N
+carnosic_acid,Carnosic acid,"1,8-cineole/camphor/alpha-pinene chemotype",identified,none,"Hcini et al., 2022 (IntechOpen)",Tunisian rosemary extract (HPLC),defined,PubChem,65126,QRYRORQUOLYVBU-VBKZILBWSA-N
+carnosol,Carnosol,var. typicus,identified,none,"Hcini et al., 2022 (IntechOpen)",Tunisian rosemary extract (HPLC),defined,PubChem,442009,XUSYGBPHQBWGAD-PJSUUKDQSA-N
+carnosol,Carnosol,var. troglodytorum,identified,none,"Hcini et al., 2022 (IntechOpen)",Tunisian rosemary extract (HPLC),defined,PubChem,442009,XUSYGBPHQBWGAD-PJSUUKDQSA-N
+carnosol,Carnosol,"1,8-cineole/camphor/alpha-pinene chemotype",identified,none,"Hcini et al., 2022 (IntechOpen)",Tunisian rosemary extract (HPLC),defined,PubChem,442009,XUSYGBPHQBWGAD-PJSUUKDQSA-N

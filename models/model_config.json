@@ -1,8 +1,12 @@
 {
-  "schema_version": "0.0.0-placeholder",
-  "description": "Schema-only placeholder. Populated after model freeze.",
-  "features": {},
-  "xgb": {},
-  "rf": {},
-  "selected": {}
+  "schema_version": "1.0.0",
+  "selected_model": "RandomForestClassifier",
+  "xgb_cv_pr_auc": 0.2613599006357627,
+  "rf_cv_pr_auc": 0.26353927733065696,
+  "params": {
+    "n_estimators": 100,
+    "max_depth": 5,
+    "class_weight": "balanced",
+    "random_state": 42
+  }
 }

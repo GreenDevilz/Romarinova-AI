@@ -1,37 +1,53 @@
-# Placeholder stub.
-# No project-specific logic before 2 Nov 2026.
-# Implemented in-event.
-#
-# Generator contract (documentation only; no executable logic pre-event):
-#
-# Single source of truth: all generated artifacts in this repository are
-# produced by this script from one results store. Hand-editing generated
-# CSVs is prohibited; if a value is wrong, fix the generator and regenerate.
-#
-# Artifacts produced in-event:
-#   results/evaluation_table.csv
-#   results/screened_compounds_annotated.csv
-#   results/primary_shortlist.csv                 (includes header metadata block)
-#   results/primary_shortlist_compound_level.csv  (defines U)
-#   results/diagnostics.csv
-#
-# results/diagnostics.csv canonical `section` values:
-#   data_feasibility_ledger
-#   missing_structures
-#   scoring_coverage_gap
-#   filtered_but_interesting
-#   suspected_variety_links
-#   sensitivity
-#   disagreement
-#   missing_ambiguous_structures
-#   other
-#
-# Required header metadata fields (protocol.md section 2.1), all unique-compound counts:
-#   N_star, U_star, known_active_count, high_ml_ad_extrapolation_count,
-#   ad_extrapolation_count, ad_missing_count
-#
-# Every N term and flag emitted here must resolve to a definition in
-# protocol.md section 2.1 or 2.2. Any new term requires a protocol amendment,
-# not a generator change.
+import pandas as pd
+import json
+from pathlib import Path
 
-# Placeholder stub.
+print("Starting artifact generation...")
+
+# Load the locked data
+shortlist = pd.read_csv("results/primary_shortlist.csv")
+compound_level = pd.read_csv("results/primary_shortlist_compound_level.csv")
+annotated = pd.read_csv("results/screened_compounds_annotated.csv")
+meta = json.loads(Path("results/shortlist_metadata.json").read_text())
+diag = pd.read_csv("results/diagnostics.csv")
+
+# Fill NaNs with None for clean JSON
+shortlist = shortlist.where(pd.notnull(shortlist), None)
+compound_level = compound_level.where(pd.notnull(compound_level), None)
+annotated = annotated.where(pd.notnull(annotated), None)
+diag = diag.where(pd.notnull(diag), None)
+
+# Build the payload
+data_contract = {
+    "metadata": meta,
+    "shortlist_pairs": shortlist.to_dict(orient="records"),
+    "compound_level_view": compound_level.to_dict(orient="records"),
+    "screened_compounds": annotated.to_dict(orient="records"),
+    "diagnostics": {
+        "ledger": diag[diag["section"] == "data_feasibility_ledger"].to_dict(orient="records"),
+        "filtered_but_interesting": diag[diag["section"] == "filtered_but_interesting"].to_dict(orient="records"),
+        "disagreement_patterns": diag[diag["section"] == "disagreement_patterns"].to_dict(orient="records"),
+        "sensitivity": diag[diag["section"] == "sensitivity"].to_dict(orient="records")
+    }
+}
+
+# Write to web folder for P3
+Path("web").mkdir(exist_ok=True)
+Path("web/data_contract.json").write_text(json.dumps(data_contract, indent=2))
+print("Successfully wrote web/data_contract.json")
+
+# --- Generate Figures ---
+import plotly.express as px
+Path("figures").mkdir(exist_ok=True)
+
+# Figure 1: Score distribution (Locked vs Ligand-Only)
+fig1 = px.scatter(
+    annotated, x="ligand_only_score", y="final_score", 
+    color="high_ml_ad_extrapolation", hover_name="compound_name",
+    title="Locked Score vs Ligand-Only Score (Colored by AD Extrapolation)",
+    labels={"ligand_only_score": "Ligand-Only Score", "final_score": "Locked Final Score"}
+)
+fig1.write_image("figures/sensitivity_overlap.png")
+print("Wrote figures/sensitivity_overlap.png")
+
+print("Artifact generation complete.")

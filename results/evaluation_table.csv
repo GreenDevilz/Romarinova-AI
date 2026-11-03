@@ -1,1 +1,5 @@
-split,model,pr_auc,pr_auc_ci_low,pr_auc_ci_high,roc_auc,ef10,ef10_bin_positives,top_recovery,top_recovery_mode,n_actives,n_inactives,n_scaffold_groups,largest_scaffold_group,ci_flag,ef_flag,top_recovery_flag,notes
+model,split,pr_auc,roc_auc,top_n_recovery,notes
+Dummy,test,0.113,0.5,0.2,Baseline
+Similarity-only,test,,,,Pending P2
+Selected RF,validation,0.887,0.987,0.75,"N_actives=4, ef_unstable=True, ci_not_reported=True"
+Selected RF,test,0.37,0.533,0.4,"N_actives=5, top_recovery_mode='top_N', ef_unstable=True, ci_not_reported=True"
