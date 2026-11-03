@@ -18,12 +18,16 @@ The α-Glucosidase Screening page shows the locked ranking and the ligand-only r
 
 The compound-level view is the primary traceability artifact, with U reported, `ligand_only_score`/`ligand_only_rank` included, `primary_cultivar` (display-only) and `all_cultivars` (authoritative) both shown with a tooltip.
 
-### 1.5 Future work
+### 1.5 Out of scope — future work only
 
-- Structural assessment (e.g., docking or MD) on a curated, unambiguous subset.
-- Extension to other glycosidases (α-amylase, lipase).
-- Sensitivity to alternative fingerprints (ECFP6) and tautomer standardization.
-- Prospective experimental validation of the top shortlist candidates.
+The following are explicitly **not** in this project's scope and are named here only to bound the plan, per `protocol.md` §1.1 and §10:
+
+- Structural assessment (docking, MD) on a curated, unambiguous subset — out of scope; stated as future work in `protocol.md` §1.9.
+- Extension to α-amylase, lipase, or other glycosidases — out of scope; "future work, not modeled" per `protocol.md` §1.1.
+- Alternative fingerprints (ECFP6) and tautomer standardization — out of scope; "Locked ECFP4 only; stated as scope limit" per `protocol.md` §10 limitations table.
+- Prospective experimental validation of shortlist candidates — outside a computational hackathon; not modeled.
+
+Nothing in this section is delivered by the pipeline, the web prototype, or the shortlist. The pipeline stops at ligand-based prioritization.
 
 ## 2. Pitch summary
 
