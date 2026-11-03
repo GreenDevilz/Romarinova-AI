@@ -28,6 +28,8 @@ Curation and provenance specification for ChEMBL human α-glucosidase bioactivit
 
 **Pre-registered query specification:** committed here; executable `scripts/chembl_query.sql` is implemented in-event and must match this specification. No ad-hoc variants after data freeze. ChEMBL is the only bioactivity source.
 
+**Docking receptor:** PDB (see §3). Not a ChEMBL source; does not affect bioactivity curation.
+
 **Split:** Bemis–Murcko scaffold split first, 70/15/15, stratified by activity (assignment and repair rules in §1.1.1). Save `splits/split_indices.json`. All baselines and Stage 1 models use the identical split. Cross-split InChIKey leakage check removes duplicates from test/validation and documents.
 
 **Day-1 data feasibility ledger:** by end of Day 1, P1 and P2 populate `results/diagnostics.csv` rows with `section = data_feasibility_ledger` recording: ChEMBL human α-glucosidase active/inactive counts after curation and species check; scaffold groups and largest scaffold group size per split; verified identified and suspected pair counts; defined/ambiguous/missing structure counts by source; structure exclusion count and impact diagnostic summary; exact known-active overlap count; compounds eligible for screening. The ledger is a recording artifact; it does not trigger a scope change. Canonical metric keys are listed in §1.1.2.
@@ -122,3 +124,28 @@ known_active_flag definition: known_active_flag = True if and only if the compou
 
 2.4 Reporting
 Cultivar presence is provenance-based. The project does not rank varieties against each other. all_cultivars is authoritative; primary_cultivar is display-only.
+
+
+# 3. Docking input preparation
+
+## 3.1 Receptor
+
+- PDB entry, chain, resolution, and missing-residue handling are locked in `models/docking_config.json` and recorded in `provenance/provenance_table.csv`.
+- Preparation is mechanical and scripted (`scripts/prepare_receptor.py`): remove crystallographic waters and non-catalytic heteroatoms; retain the catalytic Zn; add hydrogens at pH 7.4; assign Gasteiger charges; write PDBQT with Meeko. No hand-edited receptor.
+- Alternative receptor structures reviewed at lock time are recorded as rejected candidates with reasons in `compliance.md` §4.
+
+## 3.2 Ligands
+
+- 3D conformer from the locked canonical SMILES: RDKit ETKDGv3 (`randomSeed = 42`), MMFF94 optimization, protonation at pH 7.4; single lowest-energy conformer per compound.
+- PDBQT conversion with Meeko; no manual ligand editing.
+- Compounds with `structure_status ∈ {ambiguous, missing}` are not docked; they are recorded in `results/diagnostics.csv` with section = `missing_structures`.
+
+## 3.3 Grid box
+
+- Single grid box centered on the catalytic site; center and size locked in `models/docking_config.json`. One box for all compounds; no per-compound redocking box.
+
+## 3.4 Docking outputs
+
+- Per-compound: `docking_affinity_kcal_per_mol`, `docking_score`, `docking_missing`, `docking_pose_status`.
+- Written to `results/docking_results.csv` by `scripts/dock_ligands.py`; consumed by `scripts/build_artifacts.py`.
+- Docking failures are retained with `docking_missing = True` and are not imputed.

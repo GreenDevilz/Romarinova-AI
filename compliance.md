@@ -19,6 +19,7 @@ Rule compliance, licence audit, responsible research, and the decision log.
 - Human-readable locked tool/rule specifications as protocol documentation.
 - Reading titles, abstracts, and bibliographic metadata.
 - The one-page `operating_card.md`.
+- Docking receptor and grid-box specification as human-readable protocol documentation (`models/docking_config.json` schema-only; no executable docking logic).
 
 ## 1.2 Not allowed before 2 Nov
 
@@ -43,6 +44,8 @@ Human-readable locked rule specifications for ADMET, aggregator, and PAINS are c
 
 `models/rules.json` is committed pre-event as a schema-only file and is not imported by any script before 2 Nov.
 
+`models/docking_config.json` is committed pre-event as a schema-only file specifying receptor PDB ID, chain, grid-box center/size, Vina parameters (`exhaustiveness`, `num_modes`, `seed`), and the docking-score transform. It is not imported by any script before 2 Nov. Exact receptor preparation and ligand-preparation commands are committed in-event with a decision-log row.
+
 ## 1.6 Organizer confirmations
 
 - Student-only event.
@@ -53,6 +56,7 @@ Human-readable locked rule specifications for ADMET, aggregator, and PAINS are c
 ## 1.7 Pre-event completion gate
 
 All committed pre-event artifacts are empty templates, protocol documents, repository structures, outline-only presentation templates, or dependencies. No project-specific core logic is present. Rule specification files contain only human-readable protocol specs; no script imports `models/rules.json` or `models/model_config.json` before 2 Nov. A SMARTS-detector grep confirms `models/rule_specs.md` contains no literal pattern strings. Three-part mechanical presentation-text audit recorded.
+`models/docking_config.json` contains only schema and locked parameter values; no script imports it before 2 Nov.
 
 ---
 
@@ -68,8 +72,10 @@ All committed pre-event artifacts are empty templates, protocol documents, repos
 | React + Vite | MIT | Frontend | `README.md` |
 | Plotly | MIT | Figures | `README.md` |
 | SQLite | Public domain | Results store | `README.md` |
-| PDB | Public domain | Not used for docking | `README.md` |
 | PubChem | Public domain | Structure source | `README.md` |
+| PDB | Public domain | Docking receptor structure | `README.md` |
+| AutoDock Vina | Apache 2.0 | Docking engine | `README.md` |
+| Meeko | Apache 2.0 | Receptor/ligand PDBQT preparation | `README.md` |
 
 **Pre-event status:** all licences disclosed and attributed; no project-specific logic present.
 
@@ -83,12 +89,13 @@ All committed pre-event artifacts are empty templates, protocol documents, repos
 - Computational predictions are not medical facts; no compound should be used without experimental validation and clinical trials; experimental and computational outputs kept separate.
 - Known-compound critique: the ranking may naturally mix known-scaffold analogs and novel/PAINS-flagged candidates; the pipeline does not force novelty. Contribution is prioritization and transparency, not de novo discovery.
 - No clinical claims: no compound treats, prevents, or diagnoses diabetes or any metabolic disease; all outputs are exploratory hypotheses.
+- Docking scores are scoring-function estimates, not binding free energies; they ignore receptor flexibility, explicit water, entropy, and membrane context. Docked poses are hypotheses, not structural determinations; no pose is claimed as a binding mode.
 
 ---
 
 # 4. Decision log
 
-**Cap:** ≤20 rows with pre-assigned row budgets. P1 is single technical decision-maker; P2 is deputy. Decision-log entry promptly; no committee votes.
+**Cap:** ≤26 rows with pre-assigned row budgets. P1 is single technical decision-maker; P2 is deputy. Decision-log entry promptly; no committee votes.
 
 | # | Date | Decision / deviation | Rationale | Owner | Status |
 |---|---|---|---|---|---|
@@ -112,5 +119,11 @@ All committed pre-event artifacts are empty templates, protocol documents, repos
 | 18 | In-event | Per-compound structure-retrieval cap = 3 candidate records per source (PubChem, ChEMBL) | Referenced in report but unvalued; cap makes `structure_status` assignment deterministic | P1 | Locked |
 | 19 | In-event | `requirements.txt` pinned from resolved environment; RDKit version recorded explicitly | Curation reproducibility; RDKit version affects standardization/neutralization output | P1 | Locked |
 | 20 | In-event | Schedule shift: Data freeze moved to start of Nov 3 (due to environment setup and target resolution). Day 2 tasks (model training and evaluation) will still be executed on Nov 3 as planned. | Environment setup and target resolution required execution time on Nov 3; timeline compressed to preserve model freeze date | P1 | Locked |
+| 21 | Pre-event | Docking added to scope. Receptor locked: PDB 3L4W (human MGAM C-terminal catalytic domain); grid box centered on catalytic site; Vina `exhaustiveness = 32`, `num_modes = 9`, `seed = 42`. Alternative structures (e.g., 3L4X/3L4Y/3L4Z, N-terminal domain structures) rejected: same protein but redundant or wrong domain for the intestinal brush-border mechanism. | Docking provides an orthogonal, receptor-based axis of evidence alongside ligand-based ML; single locked receptor avoids post-hoc receptor shopping | P1 | Locked |
+| 22 | Pre-event | Docking scoring transform and weights locked: `docking_score = clip((-affinity - 5)/6, 0, 1)`; `final_score` weights 0.30/0.20/0.20/0.10/0.20; ML-independent weights 0.00/0.30/0.30/0.10/0.30. | Keep a single locked scoring rule; ML-independent comparison isolates ML contribution only, with docking retained in both views | P1 | Locked |
+| 23 | Pre-event | Ligand 3D preparation locked: ETKDGv3, MMFF94, pH 7.4 protonation, single lowest-energy conformer; PDBQT via Meeko. | Deterministic ligand preparation; no conformer enumeration or manual editing | P1 | Locked |
+| 24 | Pre-event | Docking failure handling locked: `docking_missing = True`, affinity blank, `docking_score = 0`; compound retained in shortlist pool and flagged. | Avoid silently dropping compounds; makes failure auditable in diagnostics | P1 | Locked |
+| 25 | In-event | `U*` redefined in artifact outputs as **unique compounds in the primary shortlist** per protocol §2.1 (was previously the screened universe; screened universe reported separately as `screened_compound_n` in `shortlist_metadata.json`). `high_ml_ad_extrapolation_count`, `ad_extrapolation_count`, `ad_missing_count`, `known_active_count` defined as unique-shortlist-compound counts. `primary_shortlist_compound_level.csv` reduced to the U shortlist compounds; `screened_compounds_annotated.csv` retains the full screened universe. Diagnostics ledger `row_id` renumbered sequentially; `filtered_but_interesting` selection covers all failing compounds up to cap 5; sensitivity `U_star` follows the shortlist definition. `all_cultivars` separator changed from `, ` to `; ` (comma-in-entry hazard). Actual numeric values regenerate with each pipeline run and are not stored in this log. | Protocol §2.1 defines all four counts as unique-compound; the previous file used the screened universe. | P2 | Locked |
+| 26 | In-event | Split rebuilt as document-aware. `document_chembl_id` is an atomic assignment unit, enforcing protocol §5.4's intent (no shared document across any pair of splits). Scaffold-grouped CV within the training split preserves §1.1/§4.4 scaffold-aware model selection. Dataset composition: 27 documents; largest is CHEMBL5244222 (26 compounds, 14.5%, 0 actives — benign, consumes training capacity without distorting active distribution). Resulting split: train 128 (71.5%, 14 actives), validation 30 (16.8%, 10 actives), test 21 (11.7%, 7 actives). Zero shared documents across train↔val, train↔test, val↔test; 0 repairs. Previous scaffold-first split preserved at `splits/split_indices.scaffold_backup.json`. **Known trade-off:** training actives dropped from 21 to 14 because CHEMBL5500361 (9 actives, 9/9 active) is now wholly in validation; reported as a limitation in README, Devpost, and the video narrative. All model-derived metrics and shortlist ranks before this row are superseded. | Scaffold-first split with post-hoc document exclusion reduced training to 30 compounds (16.8% of eligible) — unusable. Document-aware split is the only configuration satisfying §5.4 without discarding evaluation quality. | P1 + P2 | Locked |
 
-Pre-event alignment: the root-level `data_feasibility_ledger.csv` was removed because its contents belong in `results/diagnostics.csv`; `figures/` and `demo/` use `.gitkeep` markers for in-event artifacts; and `pitch.md` explicitly marks future work as out of scope. These notes are not additional numbered decisions, preserving the 20-row cap.
+Pre-event alignment: the root-level `data_feasibility_ledger.csv` was removed because its contents belong in `results/diagnostics.csv`; `figures/` and `demo/` use `.gitkeep` markers for in-event artifacts; `pitch.md` explicitly marks future work as out of scope. These notes are not additional numbered decisions, preserving the 26-row cap.

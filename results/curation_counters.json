@@ -1,0 +1,13 @@
+{
+  "n_nonhuman_excluded": 241,
+  "n_assaytype_excluded": 140,
+  "n_confidence_excluded": 0,
+  "n_unit_excluded": 34,
+  "n_standardization_failed": 0,
+  "n_unparseable_excluded": 0,
+  "n_activity_conflict_excluded": 2,
+  "n_duplicate_flagged": 3,
+  "n_actives": 31,
+  "n_inactives": 148,
+  "n_ambiguous": 108
+}

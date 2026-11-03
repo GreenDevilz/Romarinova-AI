@@ -1,9 +1,23 @@
+import os
 import sqlite3
 from pathlib import Path
+
 import pandas as pd
 
-DB_PATH = Path(r"C:\Users\aymen\chembl_db\chembl_37\chembl_37_sqlite\chembl_37.db")
-OUT_CSV = Path("results/target_resolution.csv")
+# Resolve paths relative to the repository root, regardless of CWD
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Database location — override with CHEMBL_DB_PATH if the dump lives elsewhere
+DB_PATH = Path(os.environ.get("CHEMBL_DB_PATH", BASE_DIR / "chembl_37.db")).expanduser()
+OUT_CSV = BASE_DIR / "results" / "target_resolution.csv"
+
+if not DB_PATH.exists():
+    raise FileNotFoundError(
+        f"ChEMBL SQLite database not found at {DB_PATH}.\n"
+        "Download the ChEMBL 37 SQLite dump and place it at the repo root as "
+        "'chembl_37.db', or set the CHEMBL_DB_PATH environment variable to its location."
+    )
+
 OUT_CSV.parent.mkdir(parents=True, exist_ok=True)
 
 QUERY = """
@@ -20,8 +34,10 @@ ORDER BY n_activities DESC;
 """
 
 con = sqlite3.connect(DB_PATH)
-df = pd.read_sql_query(QUERY, con)
-con.close()
+try:
+    df = pd.read_sql_query(QUERY, con)
+finally:
+    con.close()
 
 df.to_csv(OUT_CSV, index=False)
 print(df.to_string(index=False))

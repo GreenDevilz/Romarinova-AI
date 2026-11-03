@@ -19,16 +19,27 @@
 - **Evaluation:** test-set headline with real human inactives; PR-AUC, ROC-AUC, EF@10%, top-20/top-N; scaffold-clustered bootstrap CIs with locked small-N behavior; validation PR-AUC reported separately.
 - **AD:** training-LOO threshold primary; validation threshold reported. Computed before ranking lock. `ad_missing` flagged; AD does not modify `final_score`.
 - **Shortlist:** up to 10 compound-variety pairs by `final_score` from eligible compounds with ≥1 identified pair; duplication cap two per compound; actual N reported.
+- **Docking:** receptor-based docking of all eligible rosemary compounds into the locked human MGAM C-terminal catalytic site (PDB receptor, single locked grid box; methodology in §1.2.1). `docking_score` is a locked component of `final_score`.
 - **Web prototype:** three pages — Chemical Atlas (dynamic), α-Glucosidase Screening (dynamic), Evidence Explorer (static generated summary with evidence drawer).
-- **Out of scope:** no docking; no COCONUT sample; no external natural-product library screening; no automated literature scan; no manual extraction for activity evidence; no knowledge graph; no branch framework; no D overlay; no late-batch handling; no incomplete-input ranking fallback.
+- **Out of scope:** no MD simulation; no free-energy calculations; no COCONUT sample; no external natural-product library screening; no automated literature scan; no manual extraction for activity evidence; no knowledge graph; no branch framework; no D overlay; no late-batch handling; no incomplete-input ranking fallback.
 
 ## 1.2 Fixed pipeline
 
 1. **Target-based ML screening:** XGBoost and Random Forest on locked ECFP4; select by scaffold-grouped training CV; validate with scaffold splits; screen eligible rosemary catalogue.
 2. **Ligand-based similarity annotation:** max Tanimoto to training actives; label known-scaffold analogs, medium-support compounds, novel scaffolds.
 3. **Developability and PAINS filtering:** Lipinski/Veber, PAINS, aggregator, ADMET; compute locked priority score.
+4. **Receptor-based docking:** AutoDock Vina docking of every eligible rosemary compound into the locked MGAM grid; `docking_score` enters `final_score` with a locked weight (details in §1.2.1 and §4.7).
 
-No docking. No knowledge graph. No external library screening.
+No MD simulation. No free-energy calculations. No knowledge graph. No external library screening.
+
+### 1.2.1 Docking protocol
+
+- **Receptor.** Human MGAM C-terminal catalytic domain, PDB entry locked pre-event in `models/docking_config.json` (primary: PDB 3L4W; rejected candidates and reasons recorded in `compliance.md` §4). Remove crystallographic waters and non-catalytic heteroatoms; retain the catalytic Zn; add hydrogens at pH 7.4; assign Gasteiger charges; write PDBQT with Meeko.
+- **Grid box.** Single box centered on the catalytic site; center and size locked in `models/docking_config.json`; one box for all compounds; no per-compound redocking box.
+- **Ligands.** 3D conformer from the locked canonical SMILES: RDKit ETKDGv3 (`randomSeed = 42`), MMFF94-optimized, protonated at pH 7.4, converted to PDBQT with Meeko. One conformer per compound; no conformer enumeration.
+- **Docking engine.** AutoDock Vina, `exhaustiveness = 32`, `num_modes = 9`, `seed = 42`. Single run per compound; top-scoring pose retained.
+- **Failure handling.** No pose, non-finite affinity, or preparation failure → `docking_missing = True`, affinity left blank, `docking_score = 0`. The compound is **not** dropped from the shortlist pool.
+- **Reproducibility.** Vina version, receptor PDB ID, grid box, seed, and exhaustiveness recorded in `models/docking_config.json` and `compliance.md` §4.
 
 ## 1.3 Reporting stance
 
@@ -40,15 +51,16 @@ No docking. No knowledge graph. No external library screening.
 - PAINS and aggregator flags are heuristic, not truths, especially for natural products.
 - Known actives are retained but excluded from novelty claims.
 - Variety assignment is provenance-based; the project does not rank varieties against each other.
+- Docking scores are scoring-function estimates, not binding free energies; they ignore receptor flexibility, explicit water, entropy, and membrane context. They are one axis of evidence, not a verdict.
 
 ## 1.4 Dual ranking view
 
-The α-Glucosidase Screening page shows the locked ranking and the ligand-only ranking side by side and simultaneously. A separate toggle switches between the pair-level shortlist and the compound-level view. The ligand-only ranking is the same pipeline with 0.00 ML weight (0.00/0.60/0.30/0.10), computed for all eligible rosemary compounds. It is a comparison view only: no second shortlist, no second compound-level view, no second diagnostic. Divergence is reported in `results/diagnostics.csv`.
+The α-Glucosidase Screening page shows the locked ranking and the ML-independent ranking side by side and simultaneously. A separate toggle switches between the pair-level shortlist and the compound-level view. The ML-independent ranking is the same pipeline with 0.00 ML weight (0.00/0.30/0.30/0.10/0.30), computed for all eligible rosemary compounds. Docking participates in both views identically; the comparison isolates the ML contribution only. It is a comparison view only: no second shortlist, no second compound-level view, no second diagnostic. Divergence is reported in `results/diagnostics.csv`.
 
 ## 1.5 Roles
 
-- **P1:** Data & ML/AD Lead — ChEMBL curation, standardization, species check, Day-1 ledger, feature matrix, scaffold splits, CV folds, XGB/RF training and selection, test/validation evaluation with small-N flags, AD for all eligible compounds, ligand-only ranking, first-pass similarity/developability/scoring execution, `build_artifacts.py` ownership, README/reproduction, final video assembly.
-- **P2:** Cheminformatics & Consensus Lead — RDKit QC, PAINS/ADMET/aggregator with locked rules, review/ownership of similarity annotation and scoring outputs, duplication cap, compound-level view, sensitivity, diagnostics appendix; owns `compliance.md` decision-log section (≤20 rows).
+- **P1:** Data & ML/AD Lead — ChEMBL curation, standardization, species check, Day-1 ledger, feature matrix, scaffold splits, CV folds, XGB/RF training and selection, test/validation evaluation with small-N flags, AD for all eligible compounds, ligand-only ranking, first-pass similarity/developability/scoring execution, `build_artifacts.py` ownership, README/reproduction, final video assembly; **docking execution** (receptor/ligand preparation, Vina runs, docking_score generation) and `models/docking_config.json` ownership.
+- **P2:** Cheminformatics & Consensus Lead — RDKit QC, PAINS/ADMET/aggregator with locked rules, review/ownership of similarity annotation and scoring outputs, duplication cap, compound-level view, sensitivity, diagnostics appendix; owns `compliance.md` decision-log section (≤24 rows); **docking review** (grid-box sanity, pose inspection for top shortlist entries, docking QC sign-off).
 - **P3:** Literature, Evidence & Frontend Lead — rosemary evidence review, provenance, source-publication records, Evidence Explorer content, diagnostics appendix sections, three-page frontend, real-data integration from Day 2, screencast segments, deck assembly.
 
 P1 is single technical decision-maker; P2 is deputy. Decision-log entry promptly; no committee votes.
@@ -58,7 +70,8 @@ P1 is single technical decision-maker; P2 is deputy. Decision-log entry promptly
 - **Data freeze:** end of Day 1.
 - **Model freeze:** end of Day 2.
 - **Frontend UI contract freeze:** end of Day 2.
-- **Ranking lock:** Day 3 — compound identities, `final_score` rankings, duplication cap, AD flags, compound-level view, ligand-only ranking fixed.
+- **Docking freeze:** end of Day 2 — receptor, grid box, ligand-preparation protocol, and Vina parameters fixed.
+- **Ranking lock:** Day 3 — compound identities, `final_score` rankings, `docking_score`, duplication cap, AD flags, compound-level view, ML-independent ranking fixed.
 - **Final record verification:** Day 4 — locked shortlist, compound-level view, diagnostics data, generated artifacts verified for consistency.
 
 ## 1.7 Reporting conditions
@@ -78,7 +91,7 @@ P1 is single technical decision-maker; P2 is deputy. Decision-log entry promptly
 
 ## 1.9 Bottom line
 
-One target, one feature representation, one evaluation protocol, one scoring rule (with a side-by-side ligand-only comparison view), one primary shortlist definition (cap 10) plus one compound-level view, one three-student roster, one ligand-based pipeline (no docking), one fixed descoped scope per component, one timeline with buffer, one compliance posture, one reporting rule, one master definitions table. Actual N is reported everywhere; coverage gaps are stated honestly; small-N behavior is locked in advance.
+One target, one feature representation, one receptor structure, one evaluation protocol, one scoring rule (with a side-by-side ML-independent comparison view), one primary shortlist definition (cap 10) plus one compound-level view, one three-student roster, one hybrid ligand- and structure-based pipeline (ligand-based ML screening + receptor-based docking; no MD), one fixed descoped scope per component, one timeline with buffer, one compliance posture, one reporting rule, one master definitions table. Actual N is reported everywhere; coverage gaps are stated honestly; small-N behavior is locked in advance.
 
 ---
 
@@ -97,6 +110,10 @@ Canonical source for all N terms and flags. Every table caption and narrative cl
 | **`high_ml_ad_extrapolation_count`** | Unique compounds in the primary shortlist with `high_ml_ad_extrapolation = True`. Descriptive. | Ranking-lock header block. |
 | **`ad_extrapolation_count`** | Unique compounds in the primary shortlist with `ad_flag = extrapolation` (excluding `ad_missing = True`). Descriptive. | Ranking-lock header block. |
 | **`ad_missing_count`** | Unique compounds in the primary shortlist with `ad_missing = True`. Descriptive. | Ranking-lock header block. |
+| **`docking_affinity_kcal_per_mol`** | Best Vina affinity (top pose). | Docking results CSV; compound-level view. |
+| **`docking_score`** | Locked [0,1] transform of affinity (§4.7). | Scoring; `final_score`; ML-independent score. |
+| **`docking_missing`** | `True` when no pose, non-finite affinity, or preparation failure; `docking_score = 0`. | Diagnostics; compound-level view. |
+| **`docking_pose_status`** | `top_pose_only`, `failed`, or `skipped`. | Diagnostics. |
 
 ## 2.2 Flag glossary
 
@@ -112,6 +129,8 @@ Canonical source for all N terms and flags. Every table caption and narrative cl
 | `cultivar_evidence_level` | `identified` or `suspected`. Only `identified` is shortlist-eligible. |
 | `literature_evidence_level` | `experimental` only when `known_active_flag = True`; otherwise `none`. |
 | `structure_status` | `defined`, `ambiguous`, or `missing`. Only `defined` is screened. |
+| `docking_missing` | `True` when docking produced no usable pose or a non-finite affinity; `docking_score` set to 0. |
+| `docking_pose_status` | `top_pose_only` when a pose was retained; `failed` on engine/preparation failure; `skipped` for compounds outside the docking universe. |
 
 ## 2.3 Consistency rule
 
@@ -160,23 +179,26 @@ known_active = exact_training_match or exact_test_match or known_active_flag
 similarity_support = max(0, min(1, max_similarity))
 novelty_bonus = 0 if known_active else (1 if max_similarity < 0.20 else 0)
 
-final_score = 0.40 × ML_rank_score
-
-0.25 × similarity_support
-
-0.25 × developability_score
-
-0.10 × novelty_bonus
+final_score = 0.30 × ML_rank_score
+            + 0.20 × similarity_support
+            + 0.20 × developability_score
+            + 0.10 × novelty_bonus
+            + 0.20 × docking_score
 
 - `ML_rank_score` = validation-rank percentile clipped [0,1]; not a calibrated probability.
 - `developability_score` = passes among Lipinski/Veber/PAINS/aggregator ÷ 4.
+- `docking_score` = locked [0,1] transform of `docking_affinity_kcal_per_mol` (§4.7); `0` when `docking_missing = True`.
 - Weights fixed a priori, not tuned on results.
 
-## 4.2 Ligand-only score
+## 4.2 ML-independent comparison score
 
-ligand_only_score = 0.60 × similarity_support + 0.30 × developability_score + 0.10 × novelty_bonus
+ligand_only_score = 0.00 × ML_rank_score
+                  + 0.30 × similarity_support
+                  + 0.30 × developability_score
+                  + 0.10 × novelty_bonus
+                  + 0.30 × docking_score
 
-Computed by P1 for all eligible rosemary compounds and stored alongside `final_score`. Comparison view only; it does not generate a second shortlist or a second compound-level view.
+Computed by P1 for all eligible rosemary compounds and stored alongside `final_score`. Comparison view only; it does not generate a second shortlist or a second compound-level view. The field name `ligand_only_score` is retained for artifact compatibility; in prose it is described as the ML-independent comparison score.
 
 ## 4.3 Computation universe
 
@@ -193,6 +215,14 @@ Up to 10 compound-variety pairs by `final_score` from all eligible rosemary comp
 ## 4.6 Sensitivity check
 
 Scenarios: locked weights 0.40/0.25/0.25/0.10; ligand-only 0.00/0.60/0.30/0.10. The ligand-only scenario is the sole sensitivity comparison. If N* = 0, report `not_applicable_NO`. Otherwise labels are computed on pair-level overlap using N* thresholds: robust (≥ [0.67 × N]), partially_robust (≥ [0.50 × N]), weight_sensitive (≤ [0.50 × N]). Pair-level overlap = number of (compound, variety) pairs in both primary and ligand-only shortlists. Report raw pair-level overlap, label, N, and U*.
+
+## 4.7 Docking score
+
+docking_affinity_kcal_per_mol = best Vina affinity (top pose; kcal/mol)
+
+docking_score = clip(((-docking_affinity_kcal_per_mol) - 5.0) / 6.0, 0, 1)
+
+Mapping: -5 kcal/mol → 0.0; -11 kcal/mol → 1.0; stronger binders saturate at 1.0; weaker binders floor at 0.0. The transform is fixed pre-event and is not tuned on results. `docking_missing = True` forces `docking_score = 0` and leaves the affinity blank. Docking is computed for the full scoring universe (§4.3) before the ranking lock.
 
 ---
 
@@ -211,6 +241,7 @@ Scenarios: locked weights 0.40/0.25/0.25/0.10; ligand-only 0.00/0.60/0.30/0.10. 
 | Dummy | ... | ... | ... | ... |
 | Similarity-only | ... | ... | ... | ... |
 | Selected Stage 1 (XGB or RF) | ... | ... | ... | ... |
+| Docking-only | ... | ... | ... | ... |
 
 **Caption requirement:** every evaluation table caption reports test N actives, test N inactives, number of scaffold groups, and largest scaffold group size.
 
@@ -238,6 +269,8 @@ All flags appear in the evaluation table, `protocol.md`, frontend, Devpost, and 
 - Exclude compounds sharing `document_chembl_id` with test compounds from training.
 - 1000 scaffold-clustered bootstrap resamples; report CI of difference.
 - Report random-vs-scaffold Δ PR-AUC; flag >0.15 as scaffold-memorization risk.
+- Docking receptor is not derived from any test-split compound; the receptor is the locked PDB structure, not a co-crystal of a rosemary compound.
+- Docking-only baseline uses the same test set as all other baselines.
 
 ## 5.5 Literature validation
 

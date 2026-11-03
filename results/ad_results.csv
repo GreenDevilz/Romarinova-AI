@@ -1,29 +1,29 @@
 compound_id,compound_name,ad_distance,ad_flag
-1_8_cineole,"1,8-Cineole",0.8858417302319742,extrapolation
-camphor,Camphor,0.8860822583913015,extrapolation
-alpha_pinene,alpha-Pinene,0.8819064342154773,extrapolation
-borneol,Borneol,0.862279703160976,extrapolation
-camphene,Camphene,0.8952300253876878,extrapolation
-myrcene,Myrcene,0.8890070750145377,extrapolation
+1_8_cineole,"1,8-Cineole",0.9265496104279753,extrapolation
+camphor,Camphor,0.8928938525942,extrapolation
+alpha_pinene,alpha-Pinene,0.8867256185512031,extrapolation
+borneol,Borneol,0.8888564471923581,extrapolation
+camphene,Camphene,0.9083521973333892,extrapolation
+myrcene,Myrcene,0.9029995854063019,extrapolation
 p_cymene,p-Cymene,0.8191837270025066,extrapolation
 alpha_phellandrene,alpha-Phellandrene,0.8769202687859405,extrapolation
-gamma_terpinene,gamma-Terpinene,0.8899700054847113,extrapolation
+gamma_terpinene,gamma-Terpinene,0.8874533131375106,extrapolation
 alpha_terpinolene,alpha-Terpinolene,0.8496247713639018,extrapolation
 alpha_humulene,alpha-Humulene,0.8248161830111871,extrapolation
 alpha_amorphene,alpha-Amorphene,0.8454643997929739,extrapolation
 delta_cadinene,delta-Cadinene,0.8595130907208854,extrapolation
-caryophyllene_oxide,Caryophyllene oxide,0.8880312669786354,extrapolation
-gamma_eudesmol,gamma-Eudesmol,0.8857592773648737,extrapolation
+caryophyllene_oxide,Caryophyllene oxide,0.8953905743379428,extrapolation
+gamma_eudesmol,gamma-Eudesmol,0.8938178854234817,extrapolation
 alpha_elemene,alpha-Elemene,0.8700421318842372,extrapolation
-alpha_eudesmol,alpha-Eudesmol,0.873524971269332,extrapolation
-beta_pinene,beta-Pinene,0.8873308648572991,extrapolation
+alpha_eudesmol,alpha-Eudesmol,0.8833932223672397,extrapolation
+beta_pinene,beta-Pinene,0.8973308648572992,extrapolation
 limonene,Limonene,0.8198804619436751,extrapolation
-linalool,Linalool,0.8840640128704262,extrapolation
+linalool,Linalool,0.8898908719159312,extrapolation
 terpinen_4_ol,Terpinen-4-ol,0.867996826245099,extrapolation
 alpha_terpineol,alpha-Terpineol,0.8487028569908288,extrapolation
-verbenone,Verbenone,0.8628499928945335,extrapolation
+verbenone,Verbenone,0.8660313290557212,extrapolation
 bornyl_acetate,Bornyl acetate,0.8575715931413201,extrapolation
 beta_caryophyllene,beta-Caryophyllene,0.8014248366013073,extrapolation
-rosmarinic_acid,Rosmarinic acid,0.793314747959976,extrapolation
-carnosic_acid,Carnosic acid,0.8630756638036718,extrapolation
-carnosol,Carnosol,0.8468858642657844,extrapolation
+rosmarinic_acid,Rosmarinic acid,0.8037704006140597,extrapolation
+carnosic_acid,Carnosic acid,0.8635027568023016,extrapolation
+carnosol,Carnosol,0.8466533061262496,extrapolation

@@ -6,7 +6,7 @@ Track 2 — Natural Products and Drug Discovery · EthnoHack 2026 · Nov 2–8, 
 
 ## What this repository is
 
-Romarinova AI is a prioritization and traceability system for documented Tunisian rosemary compounds against human α-glucosidase. It does not claim to treat, prevent, or diagnose diabetes mellitus or any metabolic disease. The pipeline is ligand-based only; no docking is performed.
+Romarinova AI is a prioritization and traceability system for documented Tunisian rosemary compounds against human α-glucosidase. It does not claim to treat, prevent, or diagnose diabetes mellitus or any metabolic disease. The pipeline combines ligand-based ML screening with receptor-based molecular docking; no MD simulation or free-energy calculation is performed.
 
 The contribution is variety/chemotype-level traceability, scaffold-aware validation, developability filtering, a side-by-side ML-independent comparison view, and a reproducible open pipeline.
 
@@ -30,8 +30,10 @@ Allowed pre-event artifacts include: empty notebooks; protocol documents; reposi
 | Plotly | TBD | MIT | Figures |
 | SQLite | TBD | Public domain | Results store |
 | ChEMBL | TBD | CC BY-SA 4.0 | Human α-glucosidase bioactivity source |
-| PDB | TBD | Public domain | Not used for docking; cited only for general structural context if needed |
 | PubChem | TBD | Public domain | Rosemary compound structure source (priority 1) |
+| PDB | TBD | Public domain | Docking receptor structure (MGAM C-terminal catalytic domain) |
+| AutoDock Vina | TBD | Apache 2.0 | Receptor-based docking engine |
+| Meeko | TBD | Apache 2.0 | Receptor/ligand PDBQT preparation |
 
 All starter kits and public libraries are disclosed here and audited in `compliance.md`.
 
@@ -62,6 +64,10 @@ Romarinova-AI/
 │ └── features/
 ├── scripts/
 │ ├── chembl_query.sql
+│ ├── run_chembl_query.py
+│ ├── run_target_resolution.py
+│ ├── prepare_receptor.py        # receptor PDBQT preparation
+│ ├── dock_ligands.py            # Vina docking + docking_score
 │ ├── build_artifacts.py
 │ ├── validate_data_contract.py
 │ ├── evaluation.py
@@ -72,7 +78,8 @@ Romarinova-AI/
 ├── models/
 │ ├── rule_specs.md
 │ ├── rules.json
-│ └── model_config.json
+│ ├── model_config.json
+│ └── docking_config.json        # receptor PDB ID, grid box, Vina params, transform
 ├── provenance/
 │ └── provenance_table.csv
 ├── notebooks/
@@ -84,6 +91,7 @@ Romarinova-AI/
 │ └── 06_sensitivity_analysis.ipynb
 ├── results/
 │ ├── evaluation_table.csv
+│ ├── docking_results.csv        # per-compound affinity, docking_score, flags
 │ ├── screened_compounds_annotated.csv
 │ ├── primary_shortlist.csv
 │ ├── primary_shortlist_compound_level.csv
@@ -102,13 +110,15 @@ Romarinova-AI/
 
 `scripts/build_artifacts.py` is the single source of truth generator in-event. `results/primary_shortlist_compound_level.csv` defines U and is the primary traceability artifact.
 
-## Reproduction (to be completed in-event)
+## Reproduction
 
-Install `requirements.txt`; run data curation with the committed ChEMBL query and species check; run training with locked splits/CV/params/model; run screening/AD for all eligible rosemary compounds; run similarity/developability; compute `final_score` and `ligand_only_score`; run sensitivity; run `scripts/build_artifacts.py`; serve the web prototype against the frozen UI contract and validate exports.
+**Database setup.** To reproduce the pipeline, download the ChEMBL 37 SQLite dump and place it in the root as `chembl_37.db` (or set the `CHEMBL_DB_PATH` environment variable to point to its location). Both `scripts/run_chembl_query.py` and `scripts/run_target_resolution.py` resolve all paths relative to the repository root and will raise a descriptive `FileNotFoundError` if the database is missing.
+
+Install `requirements.txt`; run data curation with the committed ChEMBL query and species check; run training with locked splits/CV/params/model; run screening/AD for all eligible rosemary compounds; prepare the locked receptor (`scripts/prepare_receptor.py`) and run Vina docking for all eligible compounds (`scripts/dock_ligands.py`); run similarity/developability; compute `final_score` (including `docking_score`) and `ligand_only_score`; run sensitivity; run `scripts/build_artifacts.py`; serve the web prototype against the frozen UI contract and validate exports.
 
 ## Licence
 
-Project code: MIT (see `LICENSE`). Data and third-party libraries retain their own licences as listed above. ChEMBL data is CC BY-SA 4.0; RDKit is BSD 3-Clause; PDB is public domain.
+Project code: MIT (see `LICENSE`). Data and third-party libraries retain their own licences as listed above. ChEMBL data is CC BY-SA 4.0; RDKit is BSD 3-Clause; AutoDock Vina is Apache 2.0; Meeko is Apache 2.0; PDB is public domain.
 
 ## Disclaimer
 
