@@ -23,3 +23,9 @@ Thumbs.db
 # Demo binary
 demo/*.mp4
 !demo/final_demo_screencast.mp4
+
+# ChEMBL DB and archive
+*.db
+*.tar.gz
+chembl_db/
+
