@@ -112,9 +112,21 @@ Romarinova-AI/
 
 ## Reproduction
 
-**Database setup.** To reproduce the pipeline, download the ChEMBL 37 SQLite dump and place it in the root as `chembl_37.db` (or set the `CHEMBL_DB_PATH` environment variable to point to its location). Both `scripts/run_chembl_query.py` and `scripts/run_target_resolution.py` resolve all paths relative to the repository root and will raise a descriptive `FileNotFoundError` if the database is missing.
+**Database setup.** Download the ChEMBL 37 SQLite dump and place it in the root as `chembl_37.db` (or set the `CHEMBL_DB_PATH` environment variable). Both `scripts/run_chembl_query.py` and `scripts/run_target_resolution.py` resolve all paths relative to the repository root.
 
-Install `requirements.txt`; run data curation with the committed ChEMBL query and species check; run training with locked splits/CV/params/model; run screening/AD for all eligible rosemary compounds; prepare the locked receptor (`scripts/prepare_receptor.py`) and run Vina docking for all eligible compounds (`scripts/dock_ligands.py`); run similarity/developability; compute `final_score` (including `docking_score`) and `ligand_only_score`; run sensitivity; run `scripts/build_artifacts.py`; serve the web prototype against the frozen UI contract and validate exports.
+**Pipeline order:**
+1. `pip install -r requirements.txt`
+2. `python scripts/run_chembl_query.py` (extracts raw data)
+3. `python scripts/build_final_split_and_cv.py` (builds document-aware split + CV folds)
+4. Run `notebooks/02_stage1_training.ipynb` (trains RF, computes metrics/AD)
+5. Run `notebooks/03_stage1_screening_ad.ipynb` (screens rosemary catalogue)
+6. Run `notebooks/04_stage2_similarity.ipynb` (similarity baseline)
+7. Run `notebooks/05_stage3_developability.ipynb` (developability checks)
+8. `python scripts/prepare_receptor.py` (prepares MGAM receptor)
+9. `python scripts/dock_ligands.py` (runs Vina docking)
+10. Run `notebooks/06_sensitivity_analysis.ipynb` (consensus scoring + shortlist)
+11. `python scripts/fix_shortlist_metadata.py` (finalizes metadata)
+12. `python scripts/regenerate_data_contract.py && python scripts/validate_data_contract.py`
 
 ## Known gaps
 - **Web prototype:** `web/data_contract.json` and `web/ui_contract.json` are populated; `web/api/` and `web/frontend/` contain `.gitkeep` placeholders. The three specified pages are pending implementation.
