@@ -29,3 +29,14 @@ demo/*.mp4
 *.tar.gz
 chembl_db/
 
+# Temporary and backup directories
+backup_results/
+backup_splits/
+backup_models/
+.venv-test/
+data/temp_docking/
+
+# AutoDock Vina files
+*.pdb
+*.pdbqt
+*.log
