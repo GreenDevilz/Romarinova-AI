@@ -1,0 +1,40 @@
+{
+  "schema_version": "1.0.0",
+  "description": "Locked in-event rule encoding. Source, selection rule, and thresholds were locked pre-event in models/rule_specs.md; literal SMARTS/parameters are committed here with a decision-log row.",
+  "admet_rules": [
+    {"id": "ADMET-01", "name": "molecular_weight", "threshold": 500, "unit": "Da",     "source": "Lipinski et al., Adv. Drug Deliv. Rev. 1997"},
+    {"id": "ADMET-02", "name": "logp",             "threshold": 5,                    "source": "Lipinski et al., 1997"},
+    {"id": "ADMET-03", "name": "hbd",              "threshold": 5,                    "source": "Lipinski et al., 1997"},
+    {"id": "ADMET-04", "name": "hba",              "threshold": 10,                   "source": "Lipinski et al., 1997"},
+    {"id": "ADMET-05", "name": "rotatable_bonds",  "threshold": 10,                   "source": "Veber et al., J. Med. Chem. 2002"},
+    {"id": "ADMET-06", "name": "psa",              "threshold": 140, "unit": "A^2",   "source": "Veber et al., 2002"}
+  ],
+  "pains_catalog": {
+    "source": "RDKit FilterCatalog",
+    "catalogs": ["PAINS_A", "PAINS_B", "PAINS_C"],
+    "citation": "Baell & Holloway, J. Med. Chem. 2010, 53, 2719-2740",
+    "smarts_source": "Enumerated at runtime from RDKit FilterCatalogParams.FilterCatalogs.PAINS_A/B/C",
+    "note": "Exact SMARTS not inlined. The lock is on the source catalog set (RDKit PAINS_A/B/C), not on re-transcribed strings; runtime enumeration avoids transcription drift between the spec and the implementation."
+  },
+  "aggregator_rules": [
+    {
+      "id": "AGG-01",
+      "name": "long_aliphatic_chain",
+      "type": "smarts",
+      "smarts": "[CH2][CH2][CH2][CH2][CH2][CH2][CH2][CH2][CH2][CH2][CH2][CH2]",
+      "description": "12 or more consecutive sp3 CH2 groups. Common aggregator signature for amphiphilic detergents (Feng & Shoichet, Nat. Protoc. 2006)."
+    },
+    {
+      "id": "AGG-02",
+      "name": "amphiphilic_large",
+      "type": "property_based",
+      "conditions": {
+        "MolLogP": {"op": ">", "value": 3.0},
+        "MolWt":   {"op": ">", "value": 400}
+      },
+      "description": "Both lipophilic (LogP > 3) and large (MW > 400). Complementary amphiphilicity heuristic from the same literature (Irwin et al., J. Med. Chem. 2015)."
+    }
+  ],
+  "aggregator_logic": "OR",
+  "aggregator_pass_definition": "aggregator_pass = NOT (AGG-01 OR AGG-02)"
+}

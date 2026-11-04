@@ -22,6 +22,7 @@
 - **Docking:** receptor-based docking of all eligible rosemary compounds into the locked human MGAM C-terminal catalytic site (PDB receptor, single locked grid box; methodology in §1.2.1). `docking_score` is a locked component of `final_score`.
 - **Web prototype:** three pages — Chemical Atlas (dynamic), α-Glucosidase Screening (dynamic), Evidence Explorer (static generated summary with evidence drawer).
 - **Out of scope:** no MD simulation; no free-energy calculations; no COCONUT sample; no external natural-product library screening; no automated literature scan; no manual extraction for activity evidence; no knowledge graph; no branch framework; no D overlay; no late-batch handling; no incomplete-input ranking fallback.
+-**Split:** Document-aware 70/15/15. `document_chembl_id` is the atomic assignment unit (protocol §5.4: no shared document across any pair of splits). Within the training split, scaffold-grouped CV uses canonical Bemis-Murcko scaffolds (`includeChirality=False`, not genericized). **The headline test split is document-held-out, not scaffold-held-out.** Cross-split scaffold sharing under canonical Bemis-Murcko: 1 (train↔validation), 1 (train↔test), 2 (validation↔test) — 4 distinct shared scaffolds total, reported in `scripts/check_scaffold_leakage.py` and the evaluation caption. No scaffold-generalization claim is made from this split.
 
 ## 1.2 Fixed pipeline
 
@@ -233,6 +234,7 @@ Mapping: -5 kcal/mol → 0.0; -11 kcal/mol → 1.0; stronger binders saturate at
 - **Headline:** test split (15% scaffold-held-out), real human ChEMBL inactives (≥10 µM, confidence ≥7).
 - **Validation transparency:** validation split, same criteria; used for model selection and `ML_rank_score` mapping.
 - No decoys; real inactives only.
+- **Generalization claim:** document-held-out, not scaffold-held-out. Scaffold overlap across splits is 1 (train↔val), 1 (train↔test), 2 (val↔test); 4 distinct shared scaffolds total under canonical Bemis-Murcko (declared setting: `bemis_murcko_canonical_no_chirality`). Evaluated as a cross-paper generalization test, not a novel-scaffold generalization test.
 
 ## 5.2 Locked evaluation table
 

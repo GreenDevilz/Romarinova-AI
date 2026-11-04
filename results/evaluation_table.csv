@@ -1,6 +1,6 @@
-model,split,pr_auc,roc_auc,ef_at_10pct,top_n_recovery,top_recovery_mode,ef_unstable,ef_not_reported,ci_underpowered,ci_not_reported,test_n_actives,test_n_inactives,n_scaffold_groups,largest_scaffold_group_size,notes
-Dummy,test,0.3333333333333333,0.5,,0.3333333333333333,top_N,True,False,False,True,7,14,14,6,Constant-prediction baseline; PR-AUC equals positive-class fraction.
-Similarity-only,test,,,,,top_N,True,False,False,True,7,14,14,6,PENDING P2 — populate from notebook 04_stage2_similarity.ipynb before ranking lock.
-Docking-only,test,,,,,top_N,True,False,False,True,7,14,14,6,PENDING docking implementation — populate from scripts/dock_ligands.py.
-Selected RF,validation,0.9809090909090908,0.99,3.0,0.9,top_N,True,False,False,True,10,20,10,8,Selection split; defines the ML_rank_score reference distribution.
-Selected RF,test,0.7806122448979591,0.760204081632653,3.0,0.7142857142857143,top_N,True,False,False,True,7,14,14,6,Headline test result.
+model,split,pr_auc,roc_auc,ef_at_10pct,top_n_recovery,pr_auc_ci_low,pr_auc_ci_high,roc_auc_ci_low,roc_auc_ci_high,top_recovery_mode,ef_unstable,ef_not_reported,ci_underpowered,ci_not_reported,test_n_actives,test_n_inactives,n_scaffold_groups,largest_scaffold_group_size,bootstrap_n_valid,notes
+Dummy,test,0.3333333333333333,0.5,,0.3333333333333333,,,,,top_N,True,False,False,True,7,14,1,21,,Constant-prediction baseline; PR-AUC equals positive-class fraction.
+Similarity-only,test,0.73484393757503,0.7091836734693877,3.0,0.5714285714285714,,,,,top_N,True,False,False,True,7,14,1,21,,Max Tanimoto to training actives; no model.
+Docking-only,test,,,,,,,,,top_N,True,False,False,True,7,14,1,21,,PENDING docking implementation — populate from scripts/dock_ligands.py.
+Selected RF,validation,0.9809090909090908,0.99,3.0,0.9,,,,,top_N,True,False,False,True,10,20,1,30,,Selection split; defines the ML_rank_score reference distribution.
+Selected RF,test,0.7806122448979591,0.760204081632653,3.0,0.7142857142857143,,,,,top_N,True,False,False,True,7,14,1,21,,Headline test result.

@@ -1,16 +1,85 @@
 {
-  "schema_version": "1.1.0",
+  "schema_version": "1.2.0",
   "selected_model": "RandomForestClassifier",
-  "xgb_cv_pr_auc": 0.35909090909090907,
-  "rf_cv_pr_auc": 0.4266357376283847,
-  "params": {
+  "xgb_cv_pr_auc": 0.6728125,
+  "rf_cv_pr_auc": 0.9375,
+  "xgb_cv_per_fold": [
+    {
+      "fold": "1",
+      "pr_auc": 1.0,
+      "n_val_actives": 6,
+      "n_val_inactives": 26,
+      "n_train_actives": 8,
+      "n_train_inactives": 88
+    },
+    {
+      "fold": "2",
+      "pr_auc": 0.16,
+      "n_val_actives": 4,
+      "n_val_inactives": 28,
+      "n_train_actives": 10,
+      "n_train_inactives": 86
+    },
+    {
+      "fold": "3",
+      "pr_auc": 1.0,
+      "n_val_actives": 2,
+      "n_val_inactives": 30,
+      "n_train_actives": 12,
+      "n_train_inactives": 84
+    },
+    {
+      "fold": "4",
+      "pr_auc": 0.53125,
+      "n_val_actives": 2,
+      "n_val_inactives": 30,
+      "n_train_actives": 12,
+      "n_train_inactives": 84
+    }
+  ],
+  "rf_cv_per_fold": [
+    {
+      "fold": "1",
+      "pr_auc": 1.0,
+      "n_val_actives": 6,
+      "n_val_inactives": 26,
+      "n_train_actives": 8,
+      "n_train_inactives": 88
+    },
+    {
+      "fold": "2",
+      "pr_auc": 1.0,
+      "n_val_actives": 4,
+      "n_val_inactives": 28,
+      "n_train_actives": 10,
+      "n_train_inactives": 86
+    },
+    {
+      "fold": "3",
+      "pr_auc": 1.0,
+      "n_val_actives": 2,
+      "n_val_inactives": 30,
+      "n_train_actives": 12,
+      "n_train_inactives": 84
+    },
+    {
+      "fold": "4",
+      "pr_auc": 0.75,
+      "n_val_actives": 2,
+      "n_val_inactives": 30,
+      "n_train_actives": 12,
+      "n_train_inactives": 84
+    }
+  ],
+  "cv_n_folds": 4,
+  "cv_folds_with_zero_actives": [],
+  "cv_scored_folds_n": 4,
+  "selected_model_params": {
     "n_estimators": 100,
     "max_depth": 5,
     "class_weight": "balanced",
     "random_state": 42
   },
   "training_universe": "data/curated_chembl_eligible.csv (active + inactive only)",
-  "ad_threshold": 0.7329699900869099,
-  "ad_threshold_method": "95th percentile of training LOO mean Jaccard distance (k=5 nearest neighbors, deduplicated training set)",
-  "ad_threshold_n_train": 128
+  "scaffold_definition": "bemis_murcko_canonical_no_chirality"
 }
