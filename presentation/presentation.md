@@ -38,19 +38,19 @@ EthnoHack 2026 · Track 2 — Natural Products and Drug Discovery
 
 ### Slide 6: Shortlist and compound-level view
 **Primary shortlist (N=10 pairs, U=5 compounds):**
-1. p-Cymene (0.640)
-2. Verbenone (0.636)
-3. γ-Terpinene (0.633)
-4. α-Terpinolene (0.633)
-5. α-Pinene (0.632)
-- **Diagnostics hold:** Carnosol, carnosic acid, rosmarinic acid (failed developability).
+1. p-Cymene (0.6338)
+2. γ-Terpinene (0.6287)
+3. α-Phellandrene (0.5963)
+4. Linalool (0.5690)
+5. Myrcene (0.5551)
+- **Diagnostics hold:** Carnosol, carnosic acid, rosmarinic acid (failed developability and positive docking penalties).
 - `known_active_count = 0`.
 
 ### Slide 7: Side-by-side locked vs ML-independent comparison
 - **Pair-level overlap:** **10/10** → sensitivity label = **`robust`**.
 - **The finding:** 27 of 28 screened compounds (96.4%) share `ML_rank_score = 0.633333`. 
-- The model produces one prediction for the extrapolation regime. Zeroing ML changes nothing because ML was a constant, not a signal.
-- The rank order is determined entirely by `similarity_support`.
+- The model produces one prediction for the extrapolation regime. Zeroing ML changes nothing because ML was a constant.
+- The rank order is determined entirely by `similarity_support` and `docking_score`.
 
 ### Slide 8: Diagnostics and limitations
 - **AD Extrapolation:** 28/28 rosemary compounds (threshold 0.7330).

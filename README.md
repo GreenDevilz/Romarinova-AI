@@ -116,6 +116,14 @@ Romarinova-AI/
 
 Install `requirements.txt`; run data curation with the committed ChEMBL query and species check; run training with locked splits/CV/params/model; run screening/AD for all eligible rosemary compounds; prepare the locked receptor (`scripts/prepare_receptor.py`) and run Vina docking for all eligible compounds (`scripts/dock_ligands.py`); run similarity/developability; compute `final_score` (including `docking_score`) and `ligand_only_score`; run sensitivity; run `scripts/build_artifacts.py`; serve the web prototype against the frozen UI contract and validate exports.
 
+## Known gaps
+- **Web prototype:** `web/data_contract.json` and `web/ui_contract.json` are populated; `web/api/` and `web/frontend/` contain `.gitkeep` placeholders. The three specified pages are pending implementation.
+- **`docking-only` eval row** carries correct small-N flags with placeholder values pending further baseline runs.
+- **Video and deck** are pending submission deadline.
+
+## Post-lock corrections
+Curation, split, developability, and shortlist artifacts were corrected after the initial Day 3 freeze. Docking was successfully executed in-event and integrated into the 5-component scoring formula. The correction is recorded in `compliance.md` §4 decision-log rows 25–33.
+
 ## Licence
 
 Project code: MIT (see `LICENSE`). Data and third-party libraries retain their own licences as listed above. ChEMBL data is CC BY-SA 4.0; RDKit is BSD 3-Clause; AutoDock Vina is Apache 2.0; Meeko is Apache 2.0; PDB is public domain.

@@ -1,0 +1,18 @@
+{
+  "receptor_pdb_id": "3L4W",
+  "receptor_chain": "A",
+  "grid_center": [
+    43.76,
+    100.87,
+    30.24
+  ],
+  "grid_size": [
+    22.0,
+    22.0,
+    22.0
+  ],
+  "vina_exhaustiveness": 32,
+  "vina_num_modes": 9,
+  "vina_seed": 42,
+  "transform": "clip((-affinity - 2.0) / 4.0, 0, 1)"
+}

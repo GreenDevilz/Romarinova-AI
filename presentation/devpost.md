@@ -46,7 +46,7 @@ Three-page web prototype specified in `web/ui_contract.json`: Chemical Atlas, α
 **Model performance (leakage-free test):**
 - **Test PR-AUC: 0.781** (95% CI: 0.435–1.000) on **7 actives / 14 inactives**
 - Test ROC-AUC: 0.760
-- **Similarity-only baseline: PR-AUC 0.735.** ML provides a modest, honest +0.046 uplift over naive similarity.
+- **Similarity-only baseline: PR-AUC 0.735.** ML provides a modest uplift.
 - `ef_unstable = True`, `ci_not_reported = True` (N < 20 threshold)
 
 **Applicability domain:**
@@ -54,20 +54,22 @@ Three-page web prototype specified in `web/ui_contract.json`: Chemical Atlas, α
 
 **Primary shortlist (N = 10 pairs, U = 5 unique compounds):**
 
-| Rank | Compound | final_score | ML_rank_score | AD | Developability |
+| Rank | Compound | final_score | ML_rank_score | Docking Affinity | AD |
 |---|---|---|---|---|---|
-| 1 | p-Cymene | 0.640370 | 0.633333 | extrapolation | 1.00 |
-| 2 | Verbenone | 0.635591 | 0.633333 | extrapolation | 1.00 |
-| 3 | γ-Terpinene | 0.632994 | 0.633333 | extrapolation | 1.00 |
-| 4 | α-Terpinolene | 0.632500 | 0.633333 | extrapolation | 1.00 |
-| 5 | α-Pinene | 0.631559 | 0.633333 | extrapolation | 1.00 |
+| 1 | p-Cymene | 0.6338 | 0.633 | -4.28 kcal/mol | extrapolation |
+| 2 | γ-Terpinene | 0.6287 | 0.633 | -4.30 kcal/mol | extrapolation |
+| 3 | α-Phellandrene | 0.5963 | 0.633 | -3.81 kcal/mol | extrapolation |
+| 4 | Linalool | 0.5690 | 0.633 | -3.34 kcal/mol | extrapolation |
+| 5 | Myrcene | 0.5551 | 0.633 | -3.03 kcal/mol | extrapolation |
+
+**Diagnostics hold** (fail ≥1 developability rule): carnosol, carnosic acid, rosmarinic acid.
 
 **ML-independent comparison:**
 - Pair-level overlap: **10/10** → sensitivity label = **`robust`**
 - Compound-level overlap: **5/5**
-- Reason: **27 of 28 screened compounds (96.4%) share `ML_rank_score = 0.633333`**. Zeroing the ML weight changes nothing because ML was a constant. The shortlist rank order is determined entirely by `similarity_support`.
+- Reason: **27 of 28 screened compounds (96.4%) share `ML_rank_score = 0.633333`**. Zeroing the ML weight changes nothing because ML was a constant. The shortlist rank order is determined entirely by `similarity_support` and `docking_score`.
 
-**Headline finding:** ML discriminates well on test (PR-AUC 0.781) but collapses to a single tie-band on the rosemary extrapolation regime. The `robust` label means "ML-invariant because ML was silent," not "robustly designed."
+**Headline finding:** ML discriminates well on test (PR-AUC 0.781) but collapses to a single tie-band on the rosemary extrapolation regime. The `robust` label means "ML-invariant because ML was silent." The final ranking is a true consensus of similarity, developability, and docking.
 
 ## Impact
 

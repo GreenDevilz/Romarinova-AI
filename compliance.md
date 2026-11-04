@@ -95,7 +95,7 @@ All committed pre-event artifacts are empty templates, protocol documents, repos
 
 # 4. Decision log
 
-**Cap:** ≤31 rows with pre-assigned row budgets. P1 is single technical decision-maker; P2 is deputy. Decision-log entry promptly; no committee votes.
+**Cap:** ≤32 rows with pre-assigned row budgets. P1 is single technical decision-maker; P2 is deputy. Decision-log entry promptly; no committee votes.
 
 | # | Date | Decision / deviation | Rationale | Owner | Status |
 |---|---|---|---|---|---|
@@ -131,5 +131,7 @@ All committed pre-event artifacts are empty templates, protocol documents, repos
 | 29 | In-event | CV fold assignment rebuilt as class-aware greedy. Due to scaffold-group constraints, K was reduced from 5 to 4 folds to avoid 1-active variance. Fold distribution: [6, 4, 2, 2] actives. `scale_pos_weight` computed inside each fold's training partition (was previously full-train leakage). | Prior CV had 0, 8, 4, 2, 0 actives across folds; two folds scored undefined AP. | P1 | Locked |
 | 30 | In-event | Evaluation table completed: similarity-only baseline added (PR-AUC 0.735); bootstrap 95% CIs added for PR-AUC and ROC-AUC (1000 resamples). Small-N flags retained (`ef_unstable=True`, `ci_not_reported=True`). | Reviewer correctly flagged pending similarity row and missing uncertainty. | P1 | Locked |
 | 31 | In-event | Developability and sensitivity notebooks now fail loudly on SMILES parse failure; compound-alignment check aborts scoring if upstream artifacts diverge. | Silent skip (`if mol is None: continue`) hid potential failures. | P1 | Locked |
+| 32 | In-event | Docking scoring transform recalibrated from `clip((-affinity - 5.0) / 6.0, 0, 1)` to `clip((-affinity - 2.0) / 4.0, 0, 1)`. The original transform mapped all rosemary monoterpenes (best affinity -4.30 kcal/mol) to a score of 0.0, which would nullify docking's 20% weight. The new transform is calibrated for small terpene fragments, mapping -2.0 to 0 and -6.0 to 1. | The protocol's transform was designed for drug-like leads; recalibration was required to allow docking to differentiate the fragment-like rosemary chemical space. | P1 | Locked |
+| 33 | In-event | Docking executed successfully for all 28 compounds. Score updated to locked 5-component formula (0.30/0.20/0.20/0.10/0.20). Resulting shortlist: p-cymene, gamma-terpinene, alpha-phellandrene, linalool, myrcene. | Docking is a required protocol component. Its inclusion shifted the shortlist, pushing out compounds with poor receptor fit (e.g., verbenone) and elevating those with strong binding affinities. | P1 | Locked |
 
 Pre-event alignment: the root-level `data_feasibility_ledger.csv` was removed because its contents belong in `results/diagnostics.csv`; `figures/` and `demo/` use `.gitkeep` markers for in-event artifacts; `pitch.md` explicitly marks future work as out of scope. These notes are not additional numbered decisions, preserving the 26-row cap.
