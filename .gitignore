@@ -40,3 +40,8 @@ data/temp_docking/
 *.pdb
 *.pdbqt
 *.log
+
+# Web Frontend
+venv/
+web/frontend/venv/
+.streamlit/

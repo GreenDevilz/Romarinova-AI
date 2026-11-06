@@ -7,5 +7,12 @@
   "high_ml_ad_extrapolation_count": 0,
   "ad_extrapolation_count": 5,
   "ad_missing_count": 0,
-  "docking_missing_count": 0
+  "docking_missing_count": 0,
+  "pair_overlap": "10/10",
+  "sensitivity_label": "robust",
+  "coverage_gap": "None",
+  "ml_rank_top_band_value": 0.633333,
+  "ml_rank_top_band_count": 27,
+  "ml_rank_top_band_share": 0.9643,
+  "ml_rank_unique_values_n": 2
 }
