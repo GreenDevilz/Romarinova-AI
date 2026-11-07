@@ -173,12 +173,7 @@ def _is_missing(v) -> bool:
 
 
 def _unique_screened() -> pd.DataFrame:
-    """Return `screened` deduplicated to one row per compound.
-
-    Every compound-level statistic in this app must be computed on the
-    deduplicated frame — `screened` holds one row per (compound, variety)
-    pair, so naive `.sum()` calls over it over-count unique compounds.
-    """
+    """Return `screened` deduplicated to one row per compound."""
     if "compound_id" not in screened.columns:
         return screened
     return screened.dropna(subset=["compound_id"]).drop_duplicates("compound_id")
@@ -249,8 +244,6 @@ def _derive_stats(screened, pair_sl, comp_sl, diag, meta) -> tuple[dict, list[st
             if not _is_missing(sl) and str(sl).strip():
                 out["sensitivity_label"] = str(sl).strip()
 
-    # Coverage gap — computed on the deduplicated frame so the number is in
-    # the same unit as `screened_compound_n` (unique compounds, not pairs).
     ad_missing = None
     if "ad_flag" in _uniq_screened.columns:
         ad_missing = int(
@@ -484,7 +477,6 @@ def mol_image(smiles):
 
 @st.cache_data(show_spinner=False, max_entries=8)
 def _compute_descriptors(smiles_tuple: tuple[str, ...]) -> list[dict]:
-    """Compute MW / LogP / HBD / HBA for a tuple of SMILES (cached)."""
     from rdkit.Chem import Descriptors, Lipinski
     out: list[dict] = []
     for smi in smiles_tuple:
@@ -632,10 +624,10 @@ _PLOTLY_BASE = dict(
     template="plotly_white",
     plot_bgcolor="white",
     paper_bgcolor="white",
-    font=dict(color="#24332C", family="DM Sans, sans-serif", size=12),
-    title_font=dict(color="#173D32", size=16, family="DM Sans, sans-serif"),
-    legend=dict(font=dict(color="#24332C"), title_font=dict(color="#173D32")),
-    hoverlabel=dict(font=dict(color="#24332C"), bgcolor="white", bordercolor="#DCE3D9"),
+    font=dict(color="#24332C", family="DM Sans, sans-serif", size=13),
+    title_font=dict(color="#173D32", size=17, family="DM Sans, sans-serif"),
+    legend=dict(font=dict(color="#24332C", size=13), title_font=dict(color="#173D32", size=13)),
+    hoverlabel=dict(font=dict(color="#24332C", size=13), bgcolor="white", bordercolor="#DCE3D9"),
     margin=dict(l=40, r=40, t=60, b=40),
 )
 
@@ -676,10 +668,15 @@ st.markdown("""
     --primary-color: #28634E;
 }
 
-html, body, .stApp, .stMarkdown, .stText, [data-testid="stSidebar"] { font-family: 'DM Sans', sans-serif; }
-.stApp { background: var(--cream); color: var(--ink); }
+html, body, .stApp, .stMarkdown, .stText, [data-testid="stSidebar"] {
+    font-family: 'DM Sans', sans-serif;
+}
+.stApp { background: var(--cream); color: var(--ink); font-size: 16.5px; line-height: 1.6; }
+.stMarkdown, .stText { font-size: 16.5px; line-height: 1.6; }
 
-[data-testid="stSidebar"] { background: var(--forest); }
+/* ---------- SIDEBAR ---------- */
+[data-testid="stSidebar"] { background: var(--forest); font-size: 15px; line-height: 1.55; }
+
 [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3,
 [data-testid="stSidebar"] h4, [data-testid="stSidebar"] p, [data-testid="stSidebar"] span,
 [data-testid="stSidebar"] label, [data-testid="stSidebar"] li, [data-testid="stSidebar"] small,
@@ -690,6 +687,7 @@ html, body, .stApp, .stMarkdown, .stText, [data-testid="stSidebar"] { font-famil
 [data-testid="stSidebar"] [data-testid^="stBaseButton"] {
     background-color: #F7F6EF !important;
     border: 1px solid #DCE3D9 !important;
+    font-size: 14.5px !important;
 }
 [data-testid="stSidebar"] button:hover,
 [data-testid="stSidebar"] [data-testid^="stBaseButton"]:hover {
@@ -710,61 +708,86 @@ html, body, .stApp, .stMarkdown, .stText, [data-testid="stSidebar"] { font-famil
 
 [data-testid="stSidebar"] .romarinova-logo {
     width: 100%;
-    max-width: 400px;
+    max-width: 380px;
     height: auto;
     display: block;
     margin: 0 0 16px 0;
     border-radius: 8px;
 }
 
+/* ---------- MAIN AREA ---------- */
 [data-testid="stAppViewContainer"] :where(p, span, label, li, h1, h2, h3, h4, h5, h6, small, strong, em) {
     color: var(--ink);
 }
 [data-testid="stAppViewContainer"] :where([data-testid="stCaptionContainer"], [data-testid="stCaptionContainer"] *),
 [data-testid="stAppViewContainer"] :where(.stCaption, .stCaption *) {
     color: var(--muted) !important;
+    font-size: 13.5px !important;
+    line-height: 1.5;
 }
 
-[data-testid="stAppViewContainer"] [data-testid="stAlert"] { border-radius: 12px !important; }
+/* Markdown h4 used as in-page sub-headers (Atlas, Shortlist) */
+.stMarkdown h4 {
+    font-size: 18px;
+    line-height: 1.4;
+    letter-spacing: -0.1px;
+}
+
+[data-testid="stAppViewContainer"] [data-testid="stAlert"] {
+    border-radius: 12px !important;
+    font-size: 15px;
+}
 [data-testid="stAppViewContainer"] [data-testid="stAlert"] p,
-[data-testid="stAppViewContainer"] [data-testid="stAlert"] * { color: var(--ink) !important; }
+[data-testid="stAppViewContainer"] [data-testid="stAlert"] * {
+    color: var(--ink) !important;
+    font-size: 15px !important;
+}
 [data-testid="stSidebar"] [data-testid="stAlert"] {
     background-color: #FFFFFF !important;
     border-left: 4px solid #C7A66A !important;
     border-radius: 12px !important;
 }
 [data-testid="stSidebar"] [data-testid="stAlert"] p,
-[data-testid="stSidebar"] [data-testid="stAlert"] * { color: var(--ink) !important; }
+[data-testid="stSidebar"] [data-testid="stAlert"] * {
+    color: var(--ink) !important;
+    font-size: 14px !important;
+}
 
+/* ---------- PILLS ---------- */
 .health-pill {
     display: block;
-    padding: 8px 12px;
+    padding: 9px 13px;
     border-radius: 10px;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 600;
+    letter-spacing: 0.2px;
     text-align: center;
-    margin-bottom: 8px;
+    margin-bottom: 9px;
 }
 .health-pill.ok { background: #28634E; color: #FFFFFF !important; }
 .health-pill.warn { background: #C7A66A; color: #24332C !important; }
 
+/* ---------- LINKS / DOWNLOADS / PRIMARY ---------- */
 [data-testid="stLinkButton"], [data-testid="stLinkButton"] *,
 [data-testid^="stBaseLinkButton"], [data-testid^="stBaseLinkButton"] * {
     color: #FFFFFF !important;
+    font-size: 14.5px !important;
 }
 [data-testid="stDownloadButton"], [data-testid="stDownloadButton"] *,
 [data-testid^="stBaseDownloadButton"], [data-testid^="stBaseDownloadButton"] * {
     color: #FFFFFF !important;
+    font-size: 14.5px !important;
 }
 [data-testid="stAppViewContainer"] [data-testid^="stBaseButton-primary"],
 [data-testid="stAppViewContainer"] [data-testid^="stBaseButton-primary"] * {
     color: #FFFFFF !important;
+    font-size: 14.5px !important;
 }
 
-/* st.code — force white text (SMILES / InChIKey blocks) */
+/* ---------- CODE ---------- */
 [data-testid="stCode"] {
     background-color: #173D32 !important;
-    border-radius: 10px !important;
+    border-radius: 12px !important;
 }
 [data-testid="stCode"] pre,
 [data-testid="stCode"] code,
@@ -775,25 +798,30 @@ html, body, .stApp, .stMarkdown, .stText, [data-testid="stSidebar"] { font-famil
     color: #FFFFFF !important;
     background: transparent !important;
     -webkit-text-fill-color: #FFFFFF !important;
+    font-size: 14px !important;
 }
 
+/* ---------- METRICS ---------- */
 [data-testid="stMetric"] {
     background: #FFFFFF !important;
     border: 1px solid #E5E8DF !important;
     border-radius: 14px !important;
-    padding: 16px 20px !important;
+    padding: 18px 22px !important;
     min-height: auto !important;
 }
 [data-testid="stMetricLabel"] > div, [data-testid="stMetricLabel"] {
     color: var(--muted) !important;
-    font-size: 13px !important;
+    font-size: 14px !important;
+    letter-spacing: 0.15px !important;
 }
 [data-testid="stMetricValue"] > div, [data-testid="stMetricValue"] {
     color: var(--forest) !important;
-    font-size: 27px !important;
+    font-size: 34px !important;
     font-weight: 700 !important;
+    line-height: 1.2 !important;
 }
 
+/* ---------- PLOTLY ---------- */
 .js-plotly-plot .plotly text,
 .js-plotly-plot .plotly .xtick text,
 .js-plotly-plot .plotly .ytick text,
@@ -802,34 +830,133 @@ html, body, .stApp, .stMarkdown, .stText, [data-testid="stSidebar"] { font-famil
 .js-plotly-plot .plotly .xtitle,
 .js-plotly-plot .plotly .ytitle {
     fill: #24332C !important;
+    font-size: 13px !important;
 }
 
+/* ---------- HEADINGS ---------- */
 h1, h2, h3, h4 { color: var(--forest); }
-.hero { background: linear-gradient(120deg, var(--forest), var(--green)); padding: 36px; border-radius: 18px; color: white; margin-bottom: 24px; }
-.hero h1 { color: #FFFFFF !important; font-family: 'Playfair Display', serif; font-size: 42px; margin-bottom: 8px; }
-.hero p { color: #E6EFE8 !important; font-size: 16px; max-width: 850px; }
+
+/* ---------- HERO ---------- */
+.hero {
+    background: linear-gradient(120deg, var(--forest), var(--green));
+    padding: 40px 42px;
+    border-radius: 18px;
+    color: white;
+    margin-bottom: 26px;
+}
+.hero h1 {
+    color: #FFFFFF !important;
+    font-family: 'Playfair Display', serif;
+    font-size: 52px;
+    line-height: 1.12;
+    letter-spacing: -0.8px;
+    margin: 0 0 10px 0;
+}
+.hero p {
+    color: #E6EFE8 !important;
+    font-size: 18px;
+    line-height: 1.55;
+    max-width: 920px;
+    margin: 0 0 14px 0;
+}
 .hero span { color: #F7F6EF !important; }
 .hero .tag { color: #000000 !important; }
 
-.section-title { font-family: 'Playfair Display', serif; color: var(--forest) !important; font-size: 27px; margin: 20px 0 0 0; }
-.sub-heading   { font-family: 'Playfair Display', serif; color: var(--forest) !important; font-size: 20px; margin: 28px 0 8px 0; }
-.subtitle { color: var(--muted) !important; font-size: 14px; margin-bottom: 20px; }
-
-.info-card { background: white; border: 1px solid #E5E8DF; border-left: 4px solid #6B947A; border-radius: 12px; padding: 18px; margin-bottom: 12px; }
-.info-card h4 { color: var(--forest) !important; margin: 0 0 8px 0; }
-.info-card p { color: #4C5A52 !important; font-size: 14px; margin-bottom: 0; }
-.tag { display: inline-block; background: #E8EFE8; color: #000000 !important; border-radius: 20px; padding: 5px 11px; font-size: 12px; margin: 3px; }
-.footer { border-top: 1px solid #DCE3D9; margin-top: 40px; padding-top: 16px; color: var(--muted) !important; font-size: 12px; text-align: center; }
-.chip {
-    display: block; text-align: center; background: #FFFFFF;
-    border: 1px solid #E5E8DF; border-radius: 10px;
-    padding: 10px 8px; font-size: 12px; font-weight: 600;
-    color: #173D32; margin-bottom: 8px;
+/* ---------- SECTION TITLES ---------- */
+.section-title {
+    font-family: 'Playfair Display', serif;
+    color: var(--forest) !important;
+    font-size: 34px;
+    line-height: 1.2;
+    letter-spacing: -0.5px;
+    margin: 22px 0 0 0;
 }
+.sub-heading {
+    font-family: 'Playfair Display', serif;
+    color: var(--forest) !important;
+    font-size: 24px;
+    line-height: 1.28;
+    letter-spacing: -0.3px;
+    margin: 26px 0 8px 0;
+}
+.subtitle {
+    color: var(--muted) !important;
+    font-size: 15px;
+    line-height: 1.55;
+    margin-bottom: 18px;
+}
+
+/* ---------- CARDS ---------- */
+.info-card {
+    background: white;
+    border: 1px solid #E5E8DF;
+    border-left: 4px solid #6B947A;
+    border-radius: 12px;
+    padding: 18px 22px;
+    margin-bottom: 14px;
+}
+.info-card h4 {
+    color: var(--forest) !important;
+    font-size: 17.5px;
+    line-height: 1.35;
+    letter-spacing: -0.15px;
+    margin: 0 0 6px 0;
+}
+.info-card p {
+    color: #4C5A52 !important;
+    font-size: 15.5px;
+    line-height: 1.55;
+    margin-bottom: 0;
+}
+
+/* ---------- TAG / CHIP / FOOTER ---------- */
+.tag {
+    display: inline-block;
+    background: #E8EFE8;
+    color: #000000 !important;
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.2px;
+    margin: 4px 4px 0 0;
+}
+.chip {
+    display: block;
+    text-align: center;
+    background: #FFFFFF;
+    border: 1px solid #E5E8DF;
+    border-radius: 10px;
+    padding: 11px 10px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #173D32;
+    margin-bottom: 9px;
+}
+.footer {
+    border-top: 1px solid #DCE3D9;
+    margin-top: 44px;
+    padding-top: 18px;
+    color: var(--muted) !important;
+    font-size: 13px;
+    line-height: 1.6;
+    text-align: center;
+}
+
+/* ---------- RESPONSIVE ---------- */
 @media (max-width: 768px) {
-  .hero h1 { font-size: 30px; }
-  .section-title { font-size: 22px; }
-  .sub-heading { font-size: 18px; }
+    .hero { padding: 26px 24px; border-radius: 14px; }
+    .hero h1 { font-size: 32px; letter-spacing: -0.5px; }
+    .hero p { font-size: 16px; }
+    .section-title { font-size: 24px; }
+    .sub-heading { font-size: 19px; }
+    .info-card h4 { font-size: 16px; }
+    .info-card p { font-size: 14.5px; }
+    [data-testid="stMetricValue"] > div,
+    [data-testid="stMetricValue"] { font-size: 26px !important; }
+    [data-testid="stMetricLabel"] > div,
+    [data-testid="stMetricLabel"] { font-size: 13px !important; }
+    [data-testid="stMetric"] { padding: 14px 16px !important; }
 }
 </style>
 """, unsafe_allow_html=True)
@@ -881,14 +1008,11 @@ def page_hero(title: str, subtitle: str, tags: list[str] | None = None):
 def _page_dashboard():
     page_hero(
         "ROMARINOVA",
-        "Exploring Tunisian rosemary through phytochemistry, bioinformatics and "
-        "molecular research to identify promising natural compounds for future "
-        "investigation in type 2 diabetes.",
+        "Computational exploration of Tunisian rosemary for type 2 diabetes research.",
         tags=["ETHNOPHARMACOLOGY", "BIOINFORMATICS", "NATURAL PRODUCTS"],
     )
 
-    section_title("Research Dashboard",
-                  "A scientific overview of the ROMARINOVA research project.")
+    section_title("Research Dashboard", "Project overview.")
 
     pr_auc_display = fmt(_RF_PR_AUC) if _RF_PR_AUC is not None else "—"
     _model_label = _RF_MODEL or "n/a"
@@ -900,7 +1024,7 @@ def _page_dashboard():
     c1, c2, c3, c4 = st.columns(4)
     with c1:
         metric("Screened Compounds", meta_val("screened_compound_n"),
-               help_text="Number of unique compounds in the screened database.")
+               help_text="Unique compounds in the screened database.")
     with c2:
         metric("Shortlist (Pairs)", meta_val("N_star"),
                help_text="Compound–variety pairs in the final shortlist (N*).")
@@ -916,29 +1040,27 @@ def _page_dashboard():
         sub_title("The research question")
         info_card(
             "Can Tunisian rosemary provide promising molecules?",
-            "The project explores the chemical diversity of rosemary and investigates "
-            "whether selected compounds may interact with enzymes involved in "
-            "carbohydrate digestion.",
+            "Does rosemary's chemical diversity include compounds that interact "
+            "with carbohydrate-digesting enzymes?",
         )
         info_card(
             "Why α-glucosidase?",
-            "This enzyme is involved in the final stages of carbohydrate digestion. "
-            "Its inhibition is an established research strategy for controlling "
-            "postprandial glucose levels.",
+            "A key enzyme in carbohydrate digestion; its inhibition is a validated "
+            "strategy for controlling postprandial glucose.",
         )
     with right:
         sub_title("Scientific objectives")
         for item in [
             "Explore the chemical diversity of Tunisian rosemary.",
-            "Organize selected compounds into a searchable library.",
+            "Organize compounds into a searchable library.",
             "Identify relevant biological targets.",
             "Explore molecule–target interactions computationally.",
-            "Organize scientific evidence for future validation.",
+            "Organize evidence for future validation.",
         ]:
             st.markdown(f"- {item}")
 
     st.markdown("---")
-    section_title("Model Evaluation", "PR-AUC across all candidate models and splits.")
+    section_title("Model Evaluation", "PR-AUC across candidate models and splits.")
 
     if not eval_table.empty and "pr_auc" in eval_table.columns:
         _eval_df = eval_table.dropna(subset=["pr_auc"]).copy()
@@ -967,10 +1089,7 @@ def _page_dashboard():
                 legend=LEGEND_TOP_RIGHT,
             )
             st.plotly_chart(fig_eval, key="dash_model_cmp", **_CHART_WIDTH_KW)
-            st.caption(
-                "The **test** split is the honest number — train PR-AUC is inflated by "
-                "memorisation, and the validation split is used for model selection."
-            )
+            st.caption("Test PR-AUC is the honest metric; train is inflated by memorisation.")
     else:
         st.info("Evaluation table unavailable.")
 
@@ -985,27 +1104,21 @@ def _page_dashboard():
             and _val is not None and _count_i <= _n_i):
         _pct = 100.0 * _count_i / _n_i
         _title = f"{_pct:.1f}% ML Tie-Band"
-        _body = (f"{_count_i} of {_n_i} screened compounds receive the exact same top "
-                 f"ML_rank_score ({fmt(_val)}). The model's predictions lose resolution "
-                 f"in the extrapolation regime.")
+        _body = (f"{_count_i} of {_n_i} compounds share the same top ML_rank_score "
+                 f"({fmt(_val)}). The model cannot distinguish between them.")
         _variant = "warning"
     elif _n_i is not None and _count_i == 1 and _val is not None:
         _title = "No ML Tie-Band Detected"
-        _body = (f"The top ML_rank_score ({fmt(_val)}) is uniquely assigned across all "
-                 f"{_n_i} screened compounds — the highest score belongs to a single "
-                 f"molecule.")
+        _body = (f"The top ML_rank_score ({fmt(_val)}) belongs to a single molecule.")
         _variant = "success"
     elif _count_i is not None and _n_i is not None and _count_i > _n_i:
         _title = "ML Tie-Band (inconsistent counts)"
         _body = (f"`ml_rank_top_band_count` ({_count_i}) exceeds "
-                 f"`screened_compound_n` ({_n_i}). The metadata is inconsistent; "
-                 f"rerun the pipeline to regenerate `shortlist_metadata.json`.")
+                 f"`screened_compound_n` ({_n_i}). Rerun the pipeline.")
         _variant = "warning"
     else:
         _title = "ML Tie-Band (metadata incomplete)"
-        _body = ("The pipeline did not report `screened_compound_n`, "
-                 "`ml_rank_top_band_count`, or `ml_rank_top_band_value`; the tie-band "
-                 "cannot be computed.")
+        _body = "Tie-band count is unavailable in the pipeline metadata."
         _variant = "note"
 
     info_card(_title, _body, variant=_variant)
@@ -1022,7 +1135,7 @@ def _page_dashboard():
             _uniq_screened["ML_rank_score"], errors="coerce").dropna()
 
     if _ml_series.empty:
-        st.info("ML score data unavailable for visualization.")
+        st.info("ML score data unavailable.")
     else:
         _n_display = (
             int(_uniq_screened["compound_id"].nunique())
@@ -1037,10 +1150,7 @@ def _page_dashboard():
             _tb_val = None
 
         if _total < _n_display:
-            st.caption(
-                f"Note: {_n_display - _total} compound(s) have no ML score "
-                f"and are excluded from the histogram."
-            )
+            st.caption(f"{_n_display - _total} compound(s) excluded (no ML score).")
 
         if _n_unique <= 10:
             _counts = (
@@ -1071,16 +1181,16 @@ def _page_dashboard():
             fig.update_layout(showlegend=False, bargap=0.5)
             style_plotly(
                 fig,
-                title=f"Distribution of ML_rank_score across {_n_display} compounds",
+                title=f"ML_rank_score across {_n_display} compounds",
                 xaxis=dict(title="ML Rank Score", color="#24332C", type="category"),
-                yaxis=dict(title="Percentage of Compounds (%)", color="#24332C",
+                yaxis=dict(title="% of Compounds", color="#24332C",
                            gridcolor="#EDEFE9", range=[0, _y_max * 1.25]),
                 height=CHART_LARGE,
             )
             st.plotly_chart(fig, key="dash_ml_hist_cat", **_CHART_WIDTH_KW)
             if _tb_val is not None:
                 _shared = _count_i if _count_i is not None else "?"
-                st.caption(f"Gold bar = tie-band value **{fmt(_tb_val)}** "
+                st.caption(f"Gold = tie-band value **{fmt(_tb_val)}** "
                            f"shared by **{_shared}** compound(s).")
         else:
             fig = px.histogram(
@@ -1098,9 +1208,9 @@ def _page_dashboard():
                 )
             style_plotly(
                 fig,
-                title=f"Distribution of ML_rank_score across {_n_display} compounds",
+                title=f"ML_rank_score across {_n_display} compounds",
                 xaxis=dict(title="ML Rank Score", color="#24332C", gridcolor="#EDEFE9"),
-                yaxis=dict(title="Percentage of Compounds (%)", color="#24332C",
+                yaxis=dict(title="% of Compounds", color="#24332C",
                            gridcolor="#EDEFE9"),
                 height=CHART_LARGE,
             )
@@ -1108,8 +1218,7 @@ def _page_dashboard():
 
         if _count_i is not None and _count_i > 1 and _val is not None:
             st.caption(
-                f"**{_count_i}** compounds share the top ML score of {fmt(_val)} — "
-                f"the model cannot distinguish among them from ML alone."
+                f"**{_count_i}** compounds share the top ML score of {fmt(_val)}."
             )
 
     sub_title("Score Component Distributions")
@@ -1143,18 +1252,15 @@ def _page_dashboard():
                 )
                 st.plotly_chart(_fig_c, key=f"dash_dist_{col}", **_CHART_WIDTH_KW)
         st.caption(
-            "Distribution of shortlisted compounds across each scoring component. "
-            "A single sharp spike in ML rank confirms the tie-band; broader spread "
-            "in similarity and docking shows which terms are actually sorting the list."
+            "A flat ML rank confirms the tie-band; similarity and docking carry the ranking."
         )
 
 
 def _page_atlas():
     page_hero(
         "Chemical Atlas",
-        "Explore the phytochemical diversity of rosemary — a 1,8-cineole / camphor "
-        "/ α-pinene chemotype grown across Tunisia — and the pipeline scores "
-        "assigned to each compound.",
+        "Rosemary's phytochemical diversity across Tunisian varieties, with "
+        "pipeline scores for each compound.",
         tags=["STRUCTURE", "DIVERSITY", "APPLICABILITY DOMAIN"],
     )
 
@@ -1162,7 +1268,7 @@ def _page_atlas():
         _df_var = screened.dropna(subset=["variety", "compound_id"]).copy()
         if not _df_var.empty:
             sub_title("Botanical Variety Coverage",
-                      "Unique compounds detected in each botanical variety.")
+                      "Unique compounds detected per variety.")
 
             _per_var = (
                 _df_var.drop_duplicates(["compound_id", "variety"])
@@ -1255,7 +1361,7 @@ def _page_atlas():
         st.session_state["atlas_compound"] = compound_ids[0]
 
     selected_id = st.selectbox(
-        "🔍 Select a molecule for its scientific profile",
+        "🔍 Select a molecule",
         options=compound_ids,
         format_func=lambda cid: id_to_name.get(cid, f"Unnamed ({cid})"),
         key="atlas_compound",
@@ -1268,16 +1374,15 @@ def _page_atlas():
     comp_data = all_rows.iloc[0]
 
     dq_issues = []
-    for _col, _label in (("canonical_smiles", "canonical SMILES"),
+    for _col, _label in (("canonical_smiles", "SMILES"),
                          ("inchikey", "InChIKey")):
         if _col in all_rows.columns:
             _stripped = all_rows[_col].dropna().astype(str).str.strip()
             _variants = _stripped[_stripped != ""].unique()
             if len(_variants) > 1:
-                dq_issues.append(f"{_label} ({len(_variants)} distinct values)")
+                dq_issues.append(f"{_label} ({len(_variants)} values)")
     if dq_issues:
-        st.warning(f"Data quality: this compound's varieties disagree on "
-                   f"{'; '.join(dq_issues)}. Showing the first row.")
+        st.warning(f"Varieties disagree on {'; '.join(dq_issues)} — showing first row.")
 
     col1, col2 = st.columns([1, 2])
     with col1:
@@ -1287,7 +1392,7 @@ def _page_atlas():
         if img is not None:
             st.image(img, caption=f"{id_to_name.get(selected_id)} — 2D depiction.")
         else:
-            st.warning("Could not parse SMILES for depiction.")
+            st.warning("Could not parse SMILES.")
 
     with col2:
         st.markdown("#### Molecule Details")
@@ -1307,7 +1412,7 @@ def _page_atlas():
                    help_text="Percentile rank from the Random Forest model.")
         with c2:
             metric("Similarity", fmt(row_get(comp_data, "similarity_support", None)),
-                   help_text="Maximum Tanimoto similarity to ChEMBL training actives.")
+                   help_text="Max Tanimoto similarity to ChEMBL training actives.")
         with c3:
             best_dock, best_var = best_docking_row(all_rows)
             if best_dock is None:
@@ -1317,11 +1422,11 @@ def _page_atlas():
                        help_text="Best raw Vina affinity — not a binding free energy.")
                 if (best_var and "variety" in all_rows.columns
                         and all_rows["variety"].nunique() > 1):
-                    st.caption(f"Best across varieties — from: {best_var}")
+                    st.caption(f"From: {best_var}")
 
         if isinstance(inchikey, str) and inchikey and inchikey != "—":
             st.link_button(
-                "Explore molecule in PubChem",
+                "Explore in PubChem",
                 f"https://pubchem.ncbi.nlm.nih.gov/#query={quote(inchikey)}",
             )
 
@@ -1361,25 +1466,20 @@ def _page_atlas():
             style_plotly(
                 fig,
                 xaxis=dict(title="Similarity Support", color="#24332C", gridcolor="#EDEFE9"),
-                yaxis=dict(title="Best Docking (kcal/mol) — more negative = better",
+                yaxis=dict(title="Best Docking (kcal/mol) — lower is better",
                            color="#24332C", gridcolor="#EDEFE9"),
                 height=CHART_MEDIUM,
             )
             st.plotly_chart(fig, key="atlas_scatter", **_CHART_WIDTH_KW)
             st.caption(
-                "Compounds in the **upper right** quadrant show both high similarity "
-                "and favorable (more negative) docking. The y-axis is inverted so that "
-                "better docking scores appear higher."
+                "Upper-right = high similarity + favorable docking (y-axis inverted)."
             )
             if len(scatter_df) < len(unique_comps):
-                st.caption(
-                    f"Showing {len(scatter_df)} of {len(unique_comps)} compounds "
-                    f"(those with both similarity and docking data)."
-                )
+                st.caption(f"{len(scatter_df)} of {len(unique_comps)} compounds plotted.")
         else:
-            st.info("No compounds have both similarity and docking data to plot.")
+            st.info("No compounds with both similarity and docking data.")
     else:
-        st.info("Similarity or docking data is not available for this dataset.")
+        st.info("Similarity or docking data unavailable.")
 
     sub_title("Similarity Distribution by Applicability Domain")
     if "similarity_support" in unique_comps.columns:
@@ -1404,7 +1504,7 @@ def _page_atlas():
             style_plotly(
                 _fig_sim, title="Where rosemary compounds sit in similarity space",
                 xaxis=dict(title="Similarity Support", color="#24332C", gridcolor="#EDEFE9"),
-                yaxis=dict(title="Percentage of Compounds (%)", color="#24332C",
+                yaxis=dict(title="% of Compounds", color="#24332C",
                            gridcolor="#EDEFE9"),
                 height=CHART_MEDIUM,
                 legend=LEGEND_TOP_RIGHT,
@@ -1414,15 +1514,9 @@ def _page_atlas():
             _n_extrap = int((_sim_ad["ad_flag"] == AD_EXTRAPOLATION).sum())
             _n_total = len(_sim_ad)
             if _n_total and _n_extrap >= _n_total:
-                st.caption(
-                    f"All {_n_total} compounds are classified as **extrapolation** — "
-                    "the entire rosemary library sits outside the training domain."
-                )
+                st.caption(f"All {_n_total} compounds sit outside the training domain.")
             else:
-                st.caption(
-                    f"{_n_extrap} of {_n_total} compounds fall outside the training "
-                    "applicability domain (gold bars)."
-                )
+                st.caption(f"{_n_extrap} of {_n_total} compounds outside the training domain.")
 
     sub_title("Lipinski / Veber Chemical Space")
     if "canonical_smiles" in unique_comps.columns:
@@ -1466,13 +1560,11 @@ def _page_atlas():
 
             _n_above = int(((_merged["MW"] > 500) | (_merged["LogP"] > 5)).sum())
             st.caption(
-                f"Points to the upper-right of both dashed lines exceed the Lipinski "
-                f"rule-of-5 cutoffs — typically the large diterpenes that also fail "
-                f"docking. **{_n_above}** of {len(_merged)} compounds fall outside "
-                f"at least one cutoff."
+                f"{_n_above} of {len(_merged)} compounds exceed at least one RO5 cutoff "
+                f"(typically large diterpenes)."
             )
         else:
-            st.info("No compounds with valid SMILES for descriptor calculation.")
+            st.info("No valid SMILES for descriptor calculation.")
 
     sub_title("Compound Table")
     filter_cols = st.columns(3)
@@ -1502,7 +1594,7 @@ def _page_atlas():
                         key="atlas_dev_range",
                     )
                 else:
-                    st.caption(f"Developability score: {_dv_min:.2f} (uniform across compounds)")
+                    st.caption(f"Developability score: {_dv_min:.2f} (uniform)")
                     dev_range = (_dv_min, _dv_max)
 
     _filtered = unique_comps.copy()
@@ -1526,19 +1618,18 @@ def _page_atlas():
     col_cfg = {
         "variety_count": st.column_config.NumberColumn(
             label="Varieties",
-            help="Number of botanical varieties in which this compound was detected."),
+            help="Number of botanical varieties where this compound was detected."),
         "ad_flag": st.column_config.TextColumn(
             label="AD",
-            help="`within_AD` = inside training applicability domain; "
-                 "`extrapolation` = outside."),
+            help="`within_AD` = inside training domain; `extrapolation` = outside."),
         "known_active_flag": st.column_config.CheckboxColumn(
-            label="Known active", help="Matches an exact ChEMBL active InChIKey."),
+            label="Known active", help="Matches a ChEMBL active InChIKey."),
         "best_docking": st.column_config.NumberColumn(
             label="Best docking", format="%.2f",
-            help="Best raw Vina estimate across varieties — not a binding free energy."),
+            help="Best raw Vina estimate — not a binding free energy."),
         "developability_score": st.column_config.ProgressColumn(
             label="Developability", format="%.2f", min_value=0.0, max_value=1.0,
-            help="Composite score from Lipinski, Veber, PAINS and aggregator filters."),
+            help="Composite score from Lipinski, Veber, PAINS, and aggregator filters."),
     }
 
     _sort_cols: list[str] = []
@@ -1570,7 +1661,7 @@ def _page_atlas():
             file_name="romarinova_atlas_filtered.csv",
             mime="text/csv",
             key="atlas_download",
-            help="CSV of the currently filtered and sorted compound table.",
+            help="CSV of the current filtered and sorted table.",
         )
 
 
@@ -1612,10 +1703,7 @@ def _page_shortlist():
         _n_dup = _before - len(df)
         if _n_dup > 0:
             st.caption(
-                f"ℹ️ Collapsed {_n_dup} duplicate row(s) from "
-                f"`primary_shortlist_compound_level.csv` — kept the best-ranked "
-                f"row per compound. This keeps the table aligned with U∗ = "
-                f"{_u} unique compound(s)."
+                f"Collapsed {_n_dup} duplicate row(s); kept best-ranked per compound."
             )
 
     sub_title("Score Contribution")
@@ -1644,13 +1732,10 @@ def _page_shortlist():
         plot_df = plot_df.dropna(subset=_required).reset_index(drop=True)
         _n_dropped = _n_before - len(plot_df)
         if _n_dropped > 0:
-            st.caption(
-                f"⚠️ {_n_dropped} compound(s) excluded from the chart due to "
-                "incomplete score data."
-            )
+            st.caption(f"{_n_dropped} compound(s) excluded (incomplete scores).")
 
         if plot_df.empty:
-            st.info("No complete rows available for the score-contribution chart.")
+            st.info("No complete rows for the score-contribution chart.")
         else:
             plot_df["ML_Contribution"] = w_ml * plot_df["ML_rank_score"]
             plot_df["Sim_Contribution"] = w_sim * plot_df["similarity_support"]
@@ -1664,17 +1749,15 @@ def _page_shortlist():
             _bad_base = plot_df["Base_Contribution"] < -0.001
             if _bad_base.any():
                 st.caption(
-                    f"⚠️ {int(_bad_base.sum())} compound(s) show a negative base "
-                    "contribution — the `final_score` may include a term not modeled "
-                    "in this chart."
+                    f"{int(_bad_base.sum())} compound(s) show negative base contribution "
+                    "— check that scoring weights match the pipeline."
                 )
                 plot_df = plot_df[~_bad_base].reset_index(drop=True)
 
             if plot_df.empty:
                 st.warning(
-                    "All compounds were excluded by the negative-base-contribution "
-                    "filter — check that the scoring weights in "
-                    "`shortlist_metadata.json` match the pipeline's actual weights."
+                    "All compounds excluded by negative-base-contribution filter — "
+                    "check scoring weights in `shortlist_metadata.json`."
                 )
             else:
                 ctl_a, ctl_b = st.columns([2, 1])
@@ -1755,9 +1838,7 @@ def _page_shortlist():
                 fig = _build_traces(_orient)
                 st.plotly_chart(fig, key="shortlist_contrib", **_CHART_WIDTH_KW)
                 st.caption(
-                    "**Developability & Novelty** is shown as a residual: it is "
-                    "`final_score − ML − Similarity − Docking`. If it ever appears "
-                    "negative, the score includes a term not modelled here."
+                    "Developability & Novelty = final_score − ML − Similarity − Docking."
                 )
 
                 _ml_unique_chart = int(
@@ -1766,17 +1847,10 @@ def _page_shortlist():
                 )
                 if _ml_unique_chart == 1:
                     st.caption(
-                        "The flat ML block visually confirms the tie-band: every "
-                        "shortlisted compound receives the same ML contribution. "
-                        "Ranking is driven entirely by the varying Similarity and "
-                        "Docking contributions."
+                        "Flat ML block = tie-band; similarity and docking drive the ranking."
                     )
                 else:
-                    st.caption(
-                        f"The shortlist carries {_ml_unique_chart} distinct "
-                        "ML_rank_score values — the ML block varies across compounds "
-                        "and contributes to the ordering."
-                    )
+                    st.caption(f"{_ml_unique_chart} distinct ML scores contribute to ordering.")
 
     sub_title("Multi-Criteria Ranking View")
     _pc_df = (
@@ -1822,9 +1896,7 @@ def _page_shortlist():
             )
             st.plotly_chart(fig_pc, key="shortlist_parcoords", **_CHART_WIDTH_KW)
             st.caption(
-                "Each line is one compound. Dark green = best final rank; gold = worst. "
-                "Axes with the widest line spread (typically docking and developability) "
-                "are the ones actually differentiating the compounds."
+                "Lines = compounds; dark green = best rank. Widest axes differentiate most."
             )
 
     col1, col2 = st.columns(2)
@@ -1845,12 +1917,10 @@ def _page_shortlist():
             format="%.3f", help="Validation-rank percentile. Not a probability."),
         "docking_score": st.column_config.NumberColumn(
             format="%.3f",
-            help="Transformed Vina affinity. Not comparable to raw Vina affinity "
-                 "on the Atlas."),
+            help="Transformed Vina affinity — not comparable to raw Atlas values."),
         "rank_delta": st.column_config.NumberColumn(
             label="Δ rank", format="%+d",
-            help="ligand_only_rank − final_rank. Positive = ML helped this compound; "
-                 "negative = removing ML promoted it."),
+            help="ligand_only_rank − final_rank. Positive = ML helped this compound."),
     }
 
     with col1:
@@ -1869,19 +1939,12 @@ def _page_shortlist():
             **_DATAFRAME_WIDTH_KW,
         )
 
-    st.caption(
-        "Δ rank = ligand_only_rank − final_rank. "
-        "**Positive** = removing ML **demoted** the compound (ML helped it); "
-        "**Negative** = removing ML promoted it."
-    )
+    st.caption("Δ rank: positive = ML helped; negative = ML hurt.")
 
-    with st.expander(
-        "Consensus Analysis — why do the two rankings agree?",
-        expanded=False,
-    ):
+    with st.expander("Consensus Analysis", expanded=False):
         st.caption(
-            "Compares the locked `final_score` ranking against the "
-            "ML-independent `ligand_only_score` ranking."
+            "Compares locked `final_score` ranking against ML-independent "
+            "`ligand_only_score` ranking."
         )
 
         _ml_vals = pd.to_numeric(comp_sl["ML_rank_score"], errors="coerce").dropna()
@@ -1890,32 +1953,27 @@ def _page_shortlist():
 
         if _ml_vals.empty:
             _card_title = "ML Score Data Unavailable"
-            _card_body = (f"The sensitivity label is **{sensitivity}** with pair overlap "
-                          f"**{overlap}**, but no ML_rank_score values are present in the "
-                          f"compound shortlist.")
+            _card_body = (f"Sensitivity: **{sensitivity}**, pair overlap **{overlap}**. "
+                          f"No ML_rank_score values in compound shortlist.")
             _card_variant = "note"
         elif _ml_unique == 1 and len(_ml_vals) > 1:
             _ml_val_str = fmt(_ml_vals.iloc[0])
             _card_title = "The ML Tie-Band"
-            _card_body = (f"The sensitivity label is **{sensitivity}** with pair overlap "
-                          f"**{overlap}**. All shortlisted compounds share the same "
-                          f"ML_rank_score ({_ml_val_str}), so removing the ML weight "
-                          f"changes nothing. Ranking is determined entirely by "
-                          f"**similarity** and **docking**.")
+            _card_body = (f"Sensitivity **{sensitivity}**, pair overlap **{overlap}**. "
+                          f"All shortlisted compounds share ML_rank_score "
+                          f"({_ml_val_str}); ranking is driven by **similarity** "
+                          f"and **docking**.")
             _card_variant = "warning"
         elif _ml_unique == 1 and len(_ml_vals) == 1:
             _card_title = "Single Compound — No Tie Analysis"
-            _card_body = (f"The shortlist contains a single compound (ML_rank_score "
-                          f"{fmt(_ml_vals.iloc[0])}). Tie-band analysis requires at least "
-                          f"two compounds.")
+            _card_body = (f"Shortlist contains one compound (ML_rank_score "
+                          f"{fmt(_ml_vals.iloc[0])}). Tie analysis requires ≥2.")
             _card_variant = "note"
         else:
             _card_title = "ML Rank Contribution"
-            _card_body = (f"The sensitivity label is **{sensitivity}** with pair overlap "
-                          f"**{overlap}**. The shortlisted compounds carry {_ml_unique} "
-                          f"distinct ML_rank_score values, so removing the ML weight may "
-                          f"change the ordering. See the Δ rank column for where the two "
-                          f"rankings diverge.")
+            _card_body = (f"Sensitivity **{sensitivity}**, pair overlap **{overlap}**. "
+                          f"{_ml_unique} distinct ML scores — removing ML may change "
+                          f"the ordering. See Δ rank column.")
             _card_variant = "info"
 
         info_card(_card_title, _card_body, variant=_card_variant)
@@ -1926,15 +1984,14 @@ def _page_shortlist():
         file_name="romarinova_shortlist_compounds.csv",
         mime="text/csv",
         key="download_shortlist_compounds",
-        help="CSV of the compound-level shortlist, sorted by final_rank "
-             "(locked consensus ordering).",
+        help="CSV of the compound-level shortlist, sorted by final_rank.",
     )
 
 
 def _page_targets():
     page_hero(
         "Biological Target Explorer",
-        "Understand the biological relevance of α-glucosidase and its 3D structure.",
+        "α-glucosidase: biological relevance and 3D structure.",
         tags=["STRUCTURAL BIOLOGY", "DOCKING", "INTERPRETATION"],
     )
 
@@ -1944,24 +2001,19 @@ def _page_targets():
     with col1:
         info_card(
             "α-Glucosidase (MGAM)",
-            "Involved in the final stages of carbohydrate digestion. Its inhibition is "
-            "an established research strategy for controlling postprandial glucose "
-            "levels.",
+            "Key enzyme in carbohydrate digestion; a validated target for "
+            "postprandial glucose control.",
         )
         info_card(
             "Target Details",
-            f"The Romarinova AI pipeline docks compounds against the C-terminal "
-            f"catalytic domain of human Maltase-glucoamylase (PDB: {pdb_id}).",
+            f"Docking target: human maltase-glucoamylase C-terminal domain "
+            f"(PDB: {pdb_id}).",
         )
         st.link_button(
-            "Search α-glucosidase inhibitors in PubMed",
+            "PubMed — α-glucosidase inhibitors",
             "https://pubmed.ncbi.nlm.nih.gov/?term=alpha-glucosidase+inhibitors",
         )
-        st.caption(
-            "A note on interpretation: An interaction predicted **in silico** "
-            "does not demonstrate enzyme inhibition. Experimental biochemical "
-            "assays are required."
-        )
+        st.caption("In silico only — biochemical inhibition assays required.")
 
     with col2:
         sub_title("3D Receptor Structure")
@@ -1971,7 +2023,7 @@ def _page_targets():
 
         if not pdb_path.exists():
             st.info(f"PDB file `{pdb_path.name}` not found. Run "
-                    f"`python scripts/prepare_receptor.py` to download the receptor.")
+                    f"`scripts/prepare_receptor.py` to download the receptor.")
             st.link_button(
                 f"Fetch PDB {pdb_id} from RCSB",
                 f"https://www.rcsb.org/structure/{pdb_id}",
@@ -1982,7 +2034,7 @@ def _page_targets():
             with ctl_a:
                 show_surface = st.toggle("Molecular surface", value=False,
                                          key="pdb_surface",
-                                         help="Render a translucent van der Waals surface.")
+                                         help="Translucent van der Waals surface.")
             with ctl_b:
                 show_site = st.toggle("Docking site", value=True, key="pdb_site",
                                       help="Highlight the docking grid centre.")
@@ -1998,16 +2050,11 @@ def _page_targets():
                 if html_str is None:
                     st.info("PDB file could not be read.")
                 else:
-                    # st.iframe is the replacement for st.components.v1.html
-                    # (accepts raw HTML as `src`). Fall back on older versions.
                     if hasattr(st, "iframe"):
                         st.iframe(html_str, height=450)
                     else:
                         components.html(html_str, height=450)
-                    st.caption(
-                        "Gold sphere indicates the docking grid center "
-                        "(catalytic site)."
-                    )
+                    st.caption("Gold sphere = docking grid centre (catalytic site).")
             except Exception as e:
                 log.exception("render_pdb_html failed")
                 st.error(f"Could not render 3D structure: `{e}`")
@@ -2016,8 +2063,7 @@ def _page_targets():
 def _page_pipeline():
     page_hero(
         "Bioinformatics & Docking",
-        "The visual workflow of the Romarinova AI pipeline — from ML screening "
-        "to the final consensus shortlist.",
+        "Workflow from ML screening to consensus shortlist.",
         tags=["WORKFLOW", "REPRODUCIBILITY", "DOCKING"],
     )
 
@@ -2028,16 +2074,12 @@ def _page_pipeline():
     _n_star = meta_val("N_star")
     _u_star = meta_val("U_star")
 
-    # =====================================================================
-    # 1. AT-A-GLANCE METRICS
-    # =====================================================================
-    section_title("Pipeline at a Glance",
-                  "The parameters that define this pipeline run.")
+    section_title("Pipeline at a Glance", "Parameters defining this run.")
 
     m1, m2, m3, m4 = st.columns(4)
     with m1:
         metric("Classifier", _RF_MODEL or "Random Forest",
-               help_text="Model selected on validation PR-AUC.")
+               help_text="Selected on validation PR-AUC.")
     with m2:
         metric("Test PR-AUC", pr_auc,
                help_text="Precision-recall AUC on the held-out test split.")
@@ -2051,11 +2093,8 @@ def _page_pipeline():
 
     st.write("")
 
-    # =====================================================================
-    # 3. SCORE COMPOSITION
-    # =====================================================================
     section_title("Consensus Score Composition",
-                  "How individual components combine into `final_score`.")
+                  "How components combine into `final_score`.")
 
     _weights = meta.get("scoring_weights")
     _weights_from_meta = isinstance(_weights, dict)
@@ -2072,7 +2111,6 @@ def _page_pipeline():
     ]
     _weight_df = pd.DataFrame(_weight_rows, columns=["component", "weight"])
 
-    # --- Plot (top) ---
     _w_max = float(_weight_df["weight"].max()) if not _weight_df.empty else 0.4
     fig_w = px.bar(
         _weight_df, x="weight", y="component", orientation="h",
@@ -2089,7 +2127,6 @@ def _page_pipeline():
     )
     st.plotly_chart(fig_w, key="pipeline_weights", **_CHART_WIDTH_KW)
 
-    # --- Text (below) ---
     _formula = " + ".join(
         f"{float(w)*100:.0f}% · {n}" for n, w in _weight_rows
     )
@@ -2105,16 +2142,12 @@ def _page_pipeline():
         if _n_total > 0:
             _ad_pct = 100 * _n_extrap / _n_total
             st.caption(
-                f"**Applicability domain**: {_n_extrap} of {_n_total} "
-                f"compounds ({_ad_pct:.1f}%) sit outside the training "
-                f"domain and are treated as extrapolations."
+                f"{_n_extrap} of {_n_total} compounds ({_ad_pct:.1f}%) outside the "
+                f"training domain (extrapolation)."
             )
 
-    # =====================================================================
-    # 4. DOCKING CONFIGURATION
-    # =====================================================================
     section_title("Docking Configuration",
-                  "AutoDock Vina parameters used for the receptor.")
+                  "AutoDock Vina parameters.")
 
     _dock_labels = {
         "receptor_pdb_id": "Receptor PDB",
@@ -2146,28 +2179,22 @@ def _page_pipeline():
         st.info("Docking configuration keys not exposed in "
                 "`docking_config.json`.")
 
-    # =====================================================================
-    # 5. PIPELINE WORKFLOW (stepper — unchanged)
-    # =====================================================================
     st.markdown("---")
     sub_title("Pipeline Workflow")
 
     steps = [
         ("01", "ML Screening",
-         f"Random Forest trained on ChEMBL human MGAM data. "
-         f"(Test PR-AUC: {pr_auc})"),
+         f"Random Forest on ChEMBL MGAM (test PR-AUC {pr_auc})."),
         ("02", "Similarity",
-         "Max Tanimoto to training actives. Flags novel scaffolds."),
+         "Max Tanimoto to training actives."),
         ("03", "Developability",
-         "Lipinski, Veber, PAINS, Aggregator filters."),
+         "Lipinski / Veber / PAINS / aggregator filters."),
         ("04", "Docking",
-         f"AutoDock Vina against PDB {pdb_id} (MGAM)."),
+         f"Vina against PDB {pdb_id}."),
         ("05", "Consensus",
-         "Weighted final_score combining ML, Similarity, Developability, "
-         "Novelty, and Docking."),
+         "Weighted blend of ML, similarity, developability, novelty, docking."),
         ("06", "Applicability Domain",
-         "ECFP4 Jaccard distance used to flag compounds outside the "
-         "training domain."),
+         "ECFP4 Jaccard distance to the training set."),
     ]
 
     st.markdown("""
@@ -2176,7 +2203,7 @@ def _page_pipeline():
         display: flex;
         align-items: flex-start;
         justify-content: center;
-        margin: 28px 0 12px 0;
+        margin: 30px 0 14px 0;
         padding: 0 12px;
     }
     .pipeline-step {
@@ -2184,11 +2211,11 @@ def _page_pipeline():
         flex-direction: column;
         align-items: center;
         flex: 0 0 auto;
-        min-width: 80px;
+        min-width: 92px;
     }
     .pipeline-node {
-        width: 48px;
-        height: 48px;
+        width: 54px;
+        height: 54px;
         border-radius: 50%;
         background: #173D32;
         color: #F7F6EF;
@@ -2197,38 +2224,38 @@ def _page_pipeline():
         justify-content: center;
         font-family: 'DM Sans', sans-serif;
         font-weight: 700;
-        font-size: 15px;
-        letter-spacing: 0.5px;
-        box-shadow: 0 0 0 2px #28634E, 0 2px 6px rgba(23, 61, 50, 0.15);
-        margin-bottom: 10px;
+        font-size: 17px;
+        letter-spacing: 0.6px;
+        box-shadow: 0 0 0 2px #28634E, 0 2px 8px rgba(23, 61, 50, 0.18);
+        margin-bottom: 12px;
         position: relative;
         z-index: 2;
     }
     .pipeline-label {
-        font-size: 11px;
+        font-size: 12px;
         font-weight: 600;
         color: #173D32;
         text-align: center;
-        line-height: 1.3;
-        max-width: 100px;
+        line-height: 1.35;
+        max-width: 108px;
     }
     .pipeline-connector {
         flex: 1 1 auto;
         height: 2px;
         background: linear-gradient(90deg, #6B947A, #C7A66A);
-        margin: 24px 4px 0 4px;
+        margin: 26px 4px 0 4px;
         min-width: 12px;
     }
     @media (max-width: 768px) {
         .pipeline-flow { padding: 0; }
-        .pipeline-node { width: 38px; height: 38px; font-size: 12px; }
-        .pipeline-label { font-size: 10px; max-width: 70px; }
-        .pipeline-connector { margin-top: 19px; min-width: 6px; }
+        .pipeline-node { width: 42px; height: 42px; font-size: 14px; }
+        .pipeline-label { font-size: 11px; max-width: 78px; }
+        .pipeline-connector { margin-top: 20px; min-width: 6px; }
     }
     @media (max-width: 420px) {
-        .pipeline-node { width: 32px; height: 32px; font-size: 11px; }
-        .pipeline-label { font-size: 9px; max-width: 55px; }
-        .pipeline-connector { margin-top: 16px; min-width: 4px; }
+        .pipeline-node { width: 36px; height: 36px; font-size: 12px; }
+        .pipeline-label { font-size: 10px; max-width: 62px; }
+        .pipeline-connector { margin-top: 17px; min-width: 4px; }
     }
     </style>
     """, unsafe_allow_html=True)
@@ -2271,7 +2298,7 @@ def _render_diag_section(df_section: pd.DataFrame, cols_candidates: list[str],
         return
     cols = select_existing(df_section, cols_candidates)
     if not cols:
-        st.warning("Diagnostics section is present but has no recognised columns. "
+        st.warning("Diagnostics section has no recognised columns. "
                    f"Available: {', '.join(map(str, df_section.columns))}")
         return
 
@@ -2302,7 +2329,7 @@ def _render_diag_section(df_section: pd.DataFrame, cols_candidates: list[str],
 def _page_evidence():
     page_hero(
         "Evidence Explorer",
-        "Traceability, diagnostics, and out-of-scope candidates.",
+        "Diagnostics, traceability, and out-of-scope candidates.",
         tags=["DIAGNOSTICS", "TRACEABILITY", "LIMITATIONS"],
     )
 
@@ -2331,8 +2358,7 @@ def _page_evidence():
 
     with tabs[0]:
         sub_title("Filtered but Interesting")
-        st.write("These candidates failed at least one developability rule (e.g. PAINS) "
-                 "but are preserved for experimental follow-up.")
+        st.write("Failed ≥1 developability rule; kept for experimental follow-up.")
 
         if not _filtered_df.empty:
             _rule_col = next(
@@ -2369,8 +2395,7 @@ def _page_evidence():
                     st.plotly_chart(fig_rule, key="evidence_rule_bars",
                                     **_CHART_WIDTH_KW)
                     st.caption(
-                        "Rules that appear together on a compound are counted "
-                        "once per rule, so the bar totals can exceed the row count."
+                        "Compounds can fail multiple rules; totals can exceed row count."
                     )
 
         _render_diag_section(
@@ -2431,7 +2456,7 @@ def _page_evidence():
             if _n:
                 st.info(f"All {_n} compounds had defined 3D structures.")
             else:
-                st.info("No missing structures recorded in diagnostics.")
+                st.info("No missing structures recorded.")
         else:
             _render_diag_section(
                 missing,
@@ -2452,45 +2477,37 @@ def _page_evidence():
         sub_title("Limitations & Caveats")
         info_card(
             "No clinical claims",
-            "Computational predictions are exploratory hypotheses. No compound should "
-            "be used without experimental validation and clinical trials.",
+            "Exploratory hypotheses only. Experimental validation and clinical trials required.",
             variant="warning",
         )
         info_card(
             "Docking is a hypothesis, not evidence",
-            f"AutoDock Vina against PDB {dock_cfg.get('receptor_pdb_id', '3L4W')} "
-            f"produces scoring-function estimates, not binding free energies. "
-            f"Rigid-receptor docking cannot capture induced fit.",
+            f"Vina against PDB {dock_cfg.get('receptor_pdb_id', '3L4W')} "
+            f"produces scoring-function estimates, not binding free energies; "
+            f"rigid receptors cannot capture induced fit.",
         )
 
         _n_screened = _to_int_or_none(meta_val("screened_compound_n", None))
         _n_extrap = _count_extrapolated_unique_compounds()
         if _n_screened and _n_extrap >= _n_screened:
-            _ad_body = (f"All {_n_screened} rosemary compounds fall outside the "
-                        "95th-percentile training distance. ML predictions are "
-                        "extrapolations and should be treated with caution.")
+            _ad_body = f"All {_n_screened} compounds sit outside the training domain."
         elif _n_screened:
-            _ad_body = (f"{_n_extrap} of {_n_screened} rosemary compounds fall outside "
-                        "the 95th-percentile training distance. ML predictions on these "
-                        "compounds are extrapolations and should be treated with caution.")
+            _ad_body = f"{_n_extrap} of {_n_screened} compounds sit outside the training domain."
         else:
-            _ad_body = (f"{_n_extrap} rosemary compound(s) fall outside the "
-                        "95th-percentile training distance. ML predictions are "
-                        "extrapolations and should be treated with caution.")
-        info_card("Applicability domain is exceeded", _ad_body)
+            _ad_body = f"{_n_extrap} compound(s) sit outside the training domain."
+        info_card("Applicability domain exceeded", _ad_body)
 
         info_card(
             "Data sources",
             "ChEMBL 37 (CC BY-SA 4.0), RDKit (BSD 3-Clause), PDB (Public Domain).",
         )
-        st.caption("Full methodological justification: see the **08 · Methodology** page.")
+        st.caption("Full justification: **08 · Methodology**.")
 
 
 def _page_methodology():
     page_hero(
         "Methodology & Justification",
-        "Every design decision in the Romarinova AI pipeline is documented, justified, "
-        "and traceable — from data curation through applicability-domain assessment.",
+        "Design decisions, evidence, and reproducibility notes.",
         tags=["REPRODUCIBILITY", "MODEL SELECTION", "APPLICABILITY DOMAIN"],
     )
 
@@ -2500,51 +2517,45 @@ def _page_methodology():
 
     if _n_screened_meth and _n_extrap_meth >= _n_screened_meth:
         ad_conclusion = (
-            f"All {_n_screened_meth} rosemary compounds were flagged as extrapolations."
+            f"All {_n_screened_meth} rosemary compounds are extrapolations."
         )
     elif _n_screened_meth:
         ad_conclusion = (
             f"{_n_extrap_meth} of {_n_screened_meth} rosemary compounds "
-            f"were flagged as extrapolations."
+            f"are extrapolations."
         )
     else:
-        ad_conclusion = "Rosemary compounds were flagged as extrapolations."
+        ad_conclusion = "Rosemary compounds are flagged as extrapolations."
 
     if _n_act is not None:
-        cv_intro = f"The training set is small ({_n_act} actives)."
+        cv_intro = f"Training set is small ({_n_act} actives)."
     else:
-        cv_intro = "The training set is small."
+        cv_intro = "Training set is small."
 
-    section_title("Design Decisions", "The rationale behind each methodological choice.")
+    section_title("Design Decisions", "Rationale behind each choice.")
 
     _decisions = [
         ("01 · Random Forest & ECFP4",
-         "Random Forest was selected over XGBoost based on cross-validation PR-AUC. "
-         "ECFP4 (radius 2, 2048 bits) provides a standard, interpretable representation "
-         "of molecular substructures.",
+         "Random Forest with ECFP4 features (2048 bits, radius 2), selected over "
+         "XGBoost by CV PR-AUC.",
          "info"),
         ("02 · Document-Aware Splitting",
-         "Standard scaffold splits leaked whole papers across train/test, inflating "
-         "metrics. We switched to a document-aware split (70/15/15) to enforce true "
-         "generalization across independent experiments.",
+         "Document-aware 70/15/15 split prevents paper-level leakage.",
          "success"),
         ("03 · Class-Aware Cross-Validation",
-         f"{cv_intro} We used a 4-fold class-aware CV to ensure each fold had a "
-         f"minimum of 2 actives, preventing undefined PR-AUC scores.",
+         f"{cv_intro} 4-fold class-aware CV with ≥2 actives per fold.",
          "info"),
         ("04 · Developability Filters",
-         "Lipinski, Veber, PAINS, and Aggregator rules were applied to filter out "
-         "promiscuous or non-drug-like candidates (e.g., large diterpenes) before "
-         "ranking.",
+         "Lipinski, Veber, PAINS, and aggregator filters remove non-drug-like "
+         "candidates before ranking.",
          "warning"),
         ("05 · Rigid-Receptor Docking",
-         "AutoDock Vina against PDB 3L4W was used as an orthogonal structural filter. "
-         "Because the receptor is rigid, large diterpenes showed severe steric clashes, "
-         "correctly penalizing them.",
+         "Vina against PDB 3L4W as an orthogonal structural filter; large "
+         "diterpenes are correctly penalised.",
          "warning"),
         ("06 · Applicability Domain",
-         "We computed the 95th percentile of training LOO distances (Jaccard) to flag "
-         "compounds outside the chemical space of ChEMBL. " + ad_conclusion,
+         "95th-percentile Jaccard distance to training set flags extrapolations. "
+         + ad_conclusion,
          "success"),
     ]
 
@@ -2562,7 +2573,7 @@ def _page_methodology():
 
     section_title(
         "Model Selection Evidence",
-        "Held-out PR-AUC across candidate models — the selected model is highlighted.",
+        "Validation PR-AUC across candidate models; selected model highlighted.",
     )
 
     if not eval_table.empty and {"model", "split", "pr_auc"}.issubset(eval_table.columns):
@@ -2596,12 +2607,9 @@ def _page_methodology():
                 margin=dict(l=40, r=80, t=60, b=40),
             )
             st.plotly_chart(fig_ms, key="meth_model_cmp", **_CHART_WIDTH_KW)
-            st.caption(
-                "PR-AUC is preferred over ROC-AUC because the active class is a small "
-                "minority. The forest-green bar marks the model used downstream."
-            )
+            st.caption("PR-AUC preferred for rare actives; green bar = selected model.")
         else:
-            st.info("No validation/test PR-AUC rows available to visualise.")
+            st.info("No validation/test PR-AUC rows available.")
     else:
         st.info("Evaluation table unavailable — model-selection chart omitted.")
 
@@ -2620,10 +2628,7 @@ def _page_methodology():
     with col2:
         info_card(
             "Reproducibility",
-            "Every artefact consumed by this platform "
-            "(`screened_compounds_annotated.csv`, `primary_shortlist.csv`, "
-            "`shortlist_metadata.json`, `evaluation_table.csv`, "
-            "`docking_config.json`) is regenerated by a single pipeline run.",
+            "All consumed artefacts are regenerated by a single pipeline run.",
             variant="success",
         )
 
@@ -2631,13 +2636,9 @@ def _page_methodology():
 def _page_about():
     page_hero(
         "About ROMARINOVA",
-        "A scientific exploration platform connecting Tunisian plant biodiversity "
-        "with modern computational research.",
+        "Bridging Tunisian plant biodiversity and computational research.",
         tags=["OPEN SCIENCE", "ATTRIBUTION"],
     )
-
-    st.write("ROMARINOVA is a research-oriented digital platform developed to explore "
-             "the phytochemical diversity of Tunisian rosemary.")
 
     _version = str(meta.get("version") or "1.1.0")
 
@@ -2665,12 +2666,12 @@ def _page_about():
 # ==========================================================
 
 _VARIETY_COLOURS = {
-    "typicus":        [40, 99, 78, 200],     # forest green
-    "troglodytorum":  [199, 166, 106, 220],  # gold — conservation concern
-    "laxiflorus":     [107, 148, 122, 200],  # light green
+    "typicus":        [40, 99, 78, 200],
+    "troglodytorum":  [199, 166, 106, 220],
+    "laxiflorus":     [107, 148, 122, 200],
 }
-_PREDICTED_RING = [199, 166, 106, 255]   # gold ring around inferred points
-_OBSERVED_RING = [23, 61, 50, 255]       # forest ring around true observations
+_PREDICTED_RING = [199, 166, 106, 255]
+_OBSERVED_RING = [23, 61, 50, 255]
 
 _BASIS_COLOURS = {
     "HUMAN_OBSERVATION":   [40, 99, 78, 200],
@@ -2717,19 +2718,10 @@ def _predict_variety(lat, lon):
     distribution descriptions. THIS IS AN INFERENCE, NOT AN OBSERVATION.
 
     Zones:
-      • Cap Bon peninsula (lat > 36.5, lon > 10.7):
-          var. laxiflorus was described from the Nabeul / Cap Bon area
-          (De Noé, 1849). The narrow-leaved morphotype is still recorded
-          there today.
-      • Southern Dahar / Matmata (lat < 34.5):
-          Type locality of var. troglodytorum (Maire & Weiller, 1938;
-          holotype P00076026). Populations extend through Gabès, Médenine,
-          and the Matmata mountains.
-      • Central-west highlands (34.5 ≤ lat < 35.5, lon < 9.5):
-          Kasserine / Gafsa — closer to the troglodytorum populations
-          than to the humid north.
-      • Northern Tell (default, lat ≥ 34.5):
-          var. typicus is the dominant form across the humid north.
+      • Cap Bon (lat > 36.5, lon > 10.7): var. laxiflorus.
+      • Southern Dahar / Matmata (lat < 34.5): var. troglodytorum.
+      • Central-west highlands (34.5 ≤ lat < 35.5, lon < 9.5): var. troglodytorum.
+      • Northern Tell (default): var. typicus.
     """
     if pd.isna(lat) or pd.isna(lon):
         return None
@@ -2781,20 +2773,13 @@ def _build_tooltip(row) -> str:
         )
     if source == "predicted":
         parts.append(
-            "<span style='color:#C7A66A;font-size:11px'>"
+            "<span style='color:#C7A66A;font-size:12px'>"
             "~ variety inferred from latitude, not observed</span>"
         )
     return "<br/>".join(parts)
 
 def _read_occurrences_csv(path: Path) -> pd.DataFrame:
-    """
-    Robust reader for GBIF exports.
-
-    GBIF defaults to tab-separated (.tsv). Users often rename it to .csv,
-    and the browser sometimes inserts a BOM. This function tries tab,
-    comma, semicolon, and finally auto-detection, tolerating malformed
-    rows so a single bad line does not kill the page.
-    """
+    """Robust reader for GBIF exports (tab, comma, semicolon, auto)."""
     attempts = [
         dict(sep="\t", engine="python"),
         dict(sep=",", engine="python"),
@@ -2812,8 +2797,6 @@ def _read_occurrences_csv(path: Path) -> pd.DataFrame:
                 on_bad_lines="skip",
                 **opts,
             )
-            # A real occurrence file has many columns. If we got a single
-            # column, the delimiter was wrong — try the next one.
             if df.shape[1] >= 2:
                 log.info(
                     "Loaded %s with sep=%r (%d rows, %d cols)",
@@ -2851,28 +2834,21 @@ def load_occurrences() -> pd.DataFrame:
         & (df["decimalLongitude"].round(2) == 9.0)
     )
 
-    # ---- Observed variety (from taxonomic determination, if any) ----
     df["variety_observed"] = df.apply(_derive_variety, axis=1)
-
-    # ---- Predicted variety (heuristic from coordinates) ----
     df["variety_predicted"] = df.apply(
         lambda r: _predict_variety(r["decimalLatitude"], r["decimalLongitude"]),
         axis=1,
     )
-
-    # ---- Effective variety + provenance ----
     df["variety"] = df["variety_observed"].fillna(df["variety_predicted"])
     df["variety_source"] = df["variety_observed"].apply(
         lambda v: "observed" if isinstance(v, str) and v else "predicted"
     )
 
-    # ---- Basis of record ----
     df["basisOfRecord"] = (
         df["basisOfRecord"].fillna("UNKNOWN") if "basisOfRecord" in df.columns
         else "UNKNOWN"
     )
 
-    # ---- Tooltip ----
     df["tooltip"] = df.apply(_build_tooltip, axis=1)
 
     return df
@@ -2892,32 +2868,26 @@ def _occurrences_without_coords() -> pd.DataFrame:
 
 def _page_map():
     page_hero(
-    "Biodiversity Map",
-    "Where the rosemary in this study comes from. GBIF occurrence records "
-    "for Tunisian Salvia rosmarinus, mapped to the botanical varieties that "
-    "supply the compounds screened downstream for α-glucosidase inhibition. "
-    "Variety colours are inferred from coordinates "
-    "— full caveats at the end of this page.",
-    tags=["GBIF", "INFERRED VARIETIES", "SAMPLING EFFORT"],
-)
+        "Biodiversity Map",
+        "GBIF occurrences of Tunisian Salvia rosmarinus, coloured by inferred "
+        "botanical variety. Full caveats at page bottom.",
+        tags=["GBIF", "INFERRED VARIETIES", "SAMPLING EFFORT"],
+    )
 
     df = load_occurrences()
     if df.empty:
         st.warning(
             "No occurrence file found at `results/rosemary_occurrences_tn.csv`. "
-            "Download a GBIF CSV for *Salvia rosmarinus* with `country = TN` "
-            "and save it to that path."
+            "Download a GBIF CSV for *Salvia rosmarinus* (`country = TN`) "
+            "and save it there."
         )
         st.link_button(
-            "Open GBIF occurrence search for Tunisia",
+            "Open GBIF search — Tunisia",
             "https://www.gbif.org/occurrence/search?country=TN&taxon_key=10902460",
         )
         return
 
 
-    # ==================================================================
-    # FILTERS
-    # ==================================================================
     f1, f2, f3 = st.columns([1, 1.2, 1.3])
 
     with f1:
@@ -2943,9 +2913,6 @@ def _page_map():
                 key="map_year_range",
             )
 
-    # ==================================================================
-    # APPLY FILTERS
-    # ==================================================================
     _view = df.copy()
     if basis_filter:
         _view = _view[_view["basisOfRecord"].isin(basis_filter)]
@@ -2956,16 +2923,12 @@ def _page_map():
             _view["year"].isna()
             | ((_view["year"] >= year_range[0]) & (_view["year"] <= year_range[1]))
         ]
-    # Country-centroid placeholders are always excluded.
     _view = _view[~_view["is_country_centroid"]]
 
     if _view.empty:
         st.warning("No occurrences match the current filters.")
         return
 
-    # ==================================================================
-    # COLOUR ASSIGNMENT
-    # ==================================================================
     _view["fill_colour"] = _view["variety"].map(_VARIETY_COLOURS).apply(
         lambda c: c if isinstance(c, list) else [168, 176, 171, 180]
     )
@@ -2973,9 +2936,6 @@ def _page_map():
         lambda s: _OBSERVED_RING if s == "observed" else _PREDICTED_RING
     )
 
-    # ==================================================================
-    # SUMMARY METRICS
-    # ==================================================================
     m1, m2, m3, m4 = st.columns(4)
     with m1:
         metric("Records on map", f"{len(_view)}",
@@ -2983,20 +2943,16 @@ def _page_map():
     with m2:
         metric("Variety determinations",
                f"{int((df['variety_source'] == 'observed').sum())}",
-               help_text="Herbarium sheets with a variety label. "
-                        "None carry GPS coordinates.")
+               help_text="Herbarium sheets with a variety label (none have GPS).")
     with m3:
         metric("Inferred assignments",
                f"{int((df['variety_source'] == 'predicted').sum())}",
-               help_text="Points whose variety is guessed from latitude/longitude.")
+               help_text="Points whose variety is inferred from coordinates.")
     with m4:
         metric("Institutions",
                f"{df['institutionCode'].dropna().nunique() if 'institutionCode' in df else 0}",
                help_text="Publishing herbaria and observation platforms.")
 
-    # ==================================================================
-    # MAP
-    # ==================================================================
     _show_heatmap = st.toggle(
         "Density heatmap", value=True, key="map_heatmap_toggle",
         help="Sampling effort, not true abundance.",
@@ -3033,8 +2989,8 @@ def _page_map():
         "html": "{tooltip}",
         "style": {
             "backgroundColor": "#173D32", "color": "#F7F6EF",
-            "fontFamily": "DM Sans, sans-serif", "fontSize": "12px",
-            "borderRadius": "8px", "padding": "10px",
+            "fontFamily": "DM Sans, sans-serif", "fontSize": "13.5px",
+            "borderRadius": "10px", "padding": "12px",
         },
     }
 
@@ -3043,9 +2999,6 @@ def _page_map():
         **_CHART_WIDTH_KW,
     )
 
-    # ==================================================================
-    # LEGEND
-    # ==================================================================
     legend_items = [
         ("var. typicus (inferred)",       "#28634E"),
         ("var. troglodytorum (inferred)", "#C7A66A"),
@@ -3069,42 +3022,34 @@ def _page_map():
     )
 
     st.markdown(
-        f'<div style="font-size:12px;color:#4A5550;margin-top:8px;">'
+        f'<div style="font-size:13px;color:#4A5550;margin-top:10px;">'
         f'{legend_html}{ring_note}</div>',
         unsafe_allow_html=True,
     )
 
     st.caption(
-        "**Sampling effort, not abundance.** Brighter cells show where botanists "
-        "have collected, not where rosemary is most common. Two-thirds of modern "
-        "records fall within 50 km of Tunis. Do **not** read empty cells as absence."
+        "**Sampling effort, not abundance.** Bright cells mark collection hotspots, "
+        "not rosemary density. Two-thirds of modern records fall within 50 km of "
+        "Tunis; empty cells ≠ absence."
     )
 
-    # ==================================================================
-    # DISCLAIMER BANNER (single location; details in expander below)
-    # ==================================================================
     _n_observed = int((df["variety_source"] == "observed").sum())
     _n_predicted = int((df["variety_source"] == "predicted").sum())
 
     st.markdown(
         f"""
         <div style="background:#FFF8E6;border-left:5px solid #C7A66A;
-                    border-radius:10px;padding:10px 16px;margin-bottom:14px;
-                    color:#24332C;font-size:13px;line-height:1.45;">
+                    border-radius:12px;padding:14px 20px;margin-bottom:18px;
+                    color:#24332C;font-size:14.5px;line-height:1.5;">
             <b style="color:#173D32;">⚠ Variety colours are inferred, not observed.</b>
-            All {_n_predicted} mappable points are coloured by a coordinate
-            heuristic; GBIF has no variety-level record with GPS here
-            ({_n_observed} determinations exist, all herbarium sheets).
-            Full caveats in <i>“Known data issues and modelling choices”</i>
-            at the bottom of this page.
+            All {_n_predicted} mappable points use a coordinate heuristic; the
+            {_n_observed} actual determinations lack GPS. Details in
+            <i>“Known data issues”</i>.
         </div>
         """,
         unsafe_allow_html=True,
     )
 
-    # ==================================================================
-    # YEAR × BASIS CHART
-    # ==================================================================
     st.markdown("---")
     sub_title("Temporal and Institutional Coverage")
 
@@ -3130,15 +3075,10 @@ def _page_map():
         )
         st.plotly_chart(fig_yr, key="map_year_chart", **_CHART_WIDTH_KW)
         st.caption(
-            "**Bimodal temporal signal.** A historic herbaria peak (1907–1980) "
-            "reached localities modern recorders have not revisited. A sharp "
-            "post-2007 rise reflects iNaturalist and observation.org amateur "
-            "effort — heavily concentrated around Tunis, Nabeul, and Sousse."
+            "Bimodal: historic herbaria (1907–1980) and a post-2007 surge from "
+            "iNaturalist / observation.org, clustered around Tunis, Nabeul, Sousse."
         )
 
-    # ==================================================================
-    # VARIETY DETERMINATIONS (no coordinates) — collapsible
-    # ==================================================================
     st.markdown("---")
     _variety_df = _occurrences_without_coords()
     if _variety_df.empty:
@@ -3149,13 +3089,11 @@ def _page_map():
             f"({len(_variety_df)})",
         ):
             st.caption(
-                "The only taxonomic variety records in this export — none "
-                "carry GPS, so they cannot appear on the map. The "
-                "**holotype** of var. *troglodytorum* (Maire & Weiller, "
-                "1938) is among these records; because type specimens lack "
-                "coordinates, neither its locality nor its taxonomic status "
-                "can be mapped — a recurring limitation of historical "
-                "botany in North Africa."
+                "The only true variety records in this export — none carry GPS. "
+                "The holotype of var. *troglodytorum* (Maire & Weiller, 1938) is "
+                "among them, so neither its locality nor its taxonomic status can "
+                "be mapped — a recurring limitation of historical botany in "
+                "North Africa."
             )
             _vcols = select_existing(_variety_df, [
                 "gbifID", "variety", "scientificName", "recordedBy",
@@ -3167,44 +3105,32 @@ def _page_map():
                 key="map_variety_table", **_DATAFRAME_WIDTH_KW,
             )
 
-    # ==================================================================
-    # CONSOLIDATED CAVEATS (single expander)
-    # ==================================================================
     st.markdown("---")
     with st.expander("⚠ Known data issues and modelling choices"):
         st.markdown(
-            "- **Variety colours are heuristics.** Every GBIF record here is "
-            "either species-level with coordinates or variety-level without "
-            "coordinates — never both. The variety layer is a geographic "
-            "heuristic (`_predict_variety`) that assigns each point by "
-            "bioclimate. It is a hypothesis, not evidence; a field "
-            "determination could contradict any single point.\n"
+            "- **Variety colours are heuristics.** No GBIF record here pairs a "
+            "variety label with GPS. The variety layer is a bioclimatic "
+            "inference, not evidence.\n"
             "- **Conservation context.** The two endemic varieties occupy "
-            "different bioclimates with low gene flow from habitat "
-            "fragmentation. Var. *troglodytorum* is considered threatened. "
-            "Read the records alongside protected-area coverage, not as a "
-            "bare density map.\n"
-            "- **Country centroids.** Two MNHNL records use (34.0, 9.0) — "
-            "Tunisia's centroid — as a placeholder. They are always excluded "
-            "from the map.\n"
-            "- **BOM in the first column.** The raw GBIF CSV begins with a "
-            "UTF-8 byte-order mark; the loader handles it with "
-            "`encoding='utf-8-sig'`.\n"
-            "- **Misspelled variety.** `infraspecificEpithet` contains "
-            "`trogloditarum` (GBIF preserves the original publication). The "
-            "loader normalises it to `troglodytorum`.\n"
-            "- **A fourth variety omitted.** `var. lavandulaceum` exists in the "
-            "Matmata region, but its range overlaps almost entirely with "
-            "`var. troglodytorum` and cannot be resolved by a coordinate "
-            "heuristic. It is intentionally excluded.\n"
-            "- **Variety confined to herbaria.** All iNaturalist records are "
-            "species-level. Amateur platforms do not capture infra-specific "
+            "different bioclimates; var. *troglodytorum* is considered "
+            "threatened. Read records alongside protected-area coverage.\n"
+            "- **Country centroids.** Two MNHNL records use (34.0, 9.0) as a "
+            "placeholder — always excluded.\n"
+            "- **BOM.** The raw GBIF CSV begins with a UTF-8 byte-order mark; "
+            "handled via `encoding='utf-8-sig'`.\n"
+            "- **Misspelled epithet.** `infraspecificEpithet` contains "
+            "`trogloditarum`; normalised to `troglodytorum`.\n"
+            "- **A fourth variety omitted.** `var. lavandulaceum` overlaps "
+            "almost entirely with *troglodytorum* and cannot be resolved by "
+            "coordinate — excluded.\n"
+            "- **Herbaria only for variety.** All iNaturalist records are "
+            "species-level; amateur platforms do not capture infra-specific "
             "taxonomy.\n"
-            "- **Spatial bias.** Two-thirds of the modern records fall within "
-            "50 km of Tunis. The south is under-recorded.\n"
-            "- **How to validate.** A specimen collected inside a given point's "
+            "- **Spatial bias.** Two-thirds of modern records fall within "
+            "50 km of Tunis; the south is under-recorded.\n"
+            "- **How to validate.** A specimen collected within a point's "
             "buffer, with a taxonomic determination, would confirm or refute "
-            "the heuristic — that is the natural next experiment."
+            "the heuristic — the natural next experiment."
         )
 
 
@@ -3352,13 +3278,10 @@ _PAGES_LIST = [
     _PAGE_PIPELINE, _PAGE_EVIDENCE, _PAGE_METHODOLOGY, _PAGE_ABOUT,
 ]
 
-# Hide Streamlit's built-in sidebar menu so the logo can sit above the
-# page list; we render the navigation ourselves with st.page_link below.
 pg = st.navigation(_PAGES_LIST, position="hidden")
 
 
 with st.sidebar:
-    # ---- Logo (top of sidebar) ----
     logo_path = find_logo()
     if logo_path:
         _logo_uri = _logo_data_uri(str(logo_path))
@@ -3375,7 +3298,6 @@ with st.sidebar:
 
     st.markdown("---")
 
-    # ---- Page navigation ----
     for _page in _PAGES_LIST:
         st.page_link(_page)
 
@@ -3398,7 +3320,6 @@ with st.sidebar:
     _issues.extend(_CONSISTENCY_WARNINGS)
     _issues.extend(_ENUM_ISSUES)
 
-    # Warning-only pill: nothing is shown when the data is healthy.
     if _issues:
         st.markdown(
             f'<div class="health-pill warn">⚠️ {len(_issues)} data-health '
@@ -3409,8 +3330,7 @@ with st.sidebar:
             for msg in _issues:
                 st.caption(f"• {msg}")
             st.caption(
-                "Rerun the sensitivity notebook and "
-                "`scripts/fix_shortlist_metadata.py` to regenerate a clean "
+                "Rerun `scripts/fix_shortlist_metadata.py` to regenerate a clean "
                 "`shortlist_metadata.json`."
             )
 
@@ -3444,8 +3364,8 @@ st.markdown(f"""
     <br>
     Powered by Romarinova AI · EthnoHack 2026
     <br>
-    Artefacts last updated: {esc(_artefact_ts)} · App build: {esc(BUILD_DATE)}
+    Artefacts updated: {esc(_artefact_ts)} · Build: {esc(BUILD_DATE)}
     <br>
-    All scientific hypotheses require validation.
+    Hypotheses only — experimental validation required.
 </div>
 """, unsafe_allow_html=True)
