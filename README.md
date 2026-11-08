@@ -10,9 +10,16 @@ Romarinova AI is a prioritization and traceability system for documented Tunisia
 
 The contribution is variety/chemotype-level traceability, scaffold-aware validation, developability filtering, a side-by-side ML-independent comparison view, and a reproducible open pipeline.
 
+## Submission
+
+The web prototype is implemented and delivered, and the project has been submitted to EthnoHack 2026.
+
+- Project video: https://youtu.be/mCdS_YQeJhA
+- GitHub repository: https://github.com/GreenDevilz/Romarinova-AI
+
 ## Pre-event scaffolding disclosure
 
-This repository is committed before 2 Nov 2026 with **empty notebooks, protocol documentation, repository structures, outline-only presentation templates, dependency files, and placeholder/schema-only scaffolding only**. No project-specific core logic is present before 2 Nov. All data curation, model training, feature generation, AD calibration, scoring, and artifact generation occur during the hackathon.
+Before 2 Nov 2026, the repository contained **empty notebooks, protocol documentation, repository structures, outline-only presentation templates, dependency files, and placeholder/schema-only scaffolding only**. No project-specific core logic was present before 2 Nov. Data curation, model training, feature generation, AD calibration, scoring, and artifact generation were carried out during the hackathon.
 
 Allowed pre-event artifacts include: empty notebooks; protocol documents; repository/folder structures; outline-only presentation templates with `[FILL: ...]` slots; `requirements.txt`; empty/placeholder schemas and templates; human-readable locked tool/rule specifications; and the one-page `operating_card.md`.
 
@@ -56,8 +63,8 @@ Romarinova-AI/
 ├── pitch.md # impact and future work + pitch
 ├── operating_card.md # one-page daily execution artifact (canonical per protocol)
 ├── presentation/
-│ ├── presentation.md # deck outline + narration outline + narrative text
-│ └── devpost.md # Devpost template
+│ ├── presentation.md # project presentation status and final links
+│ └── devpost.md # submission status and final links
 ├── data/
 │ ├── curated_chembl.csv
 │ ├── cultivar_compound_catalogue.csv
@@ -128,10 +135,8 @@ Romarinova-AI/
 11. `python scripts/fix_shortlist_metadata.py` (finalizes metadata)
 12. `python scripts/regenerate_data_contract.py && python scripts/validate_data_contract.py`
 
-## Known gaps
-- **Web prototype:** `web/data_contract.json` and `web/ui_contract.json` are populated; `web/api/` and `web/frontend/` contain `.gitkeep` placeholders. The three specified pages are pending implementation.
+## Remaining gaps
 - **`docking-only` eval row** carries correct small-N flags with placeholder values pending further baseline runs.
-- **Video and deck** are pending submission deadline.
 
 ## Post-lock corrections
 Curation, split, developability, and shortlist artifacts were corrected after the initial Day 3 freeze. Docking was successfully executed in-event and integrated into the 5-component scoring formula. The correction is recorded in `compliance.md` §4 decision-log rows 25–33.
