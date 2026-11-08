@@ -159,9 +159,13 @@ def main():
     out_df.to_csv(OUTPUT_PATH, index=False)
     print(f"\nSaved {len(out_df)} docking results to {OUTPUT_PATH}")
     
-    # Clean up temporary PDBQT files to save disk space
-    shutil.rmtree(TEMP_DIR)
-    print(f"Cleaned up temporary files in {TEMP_DIR}")
+    # --- NEW CODE: Save persistent poses for ChimeraX rendering ---
+    POSES_DIR = ROOT / "data" / "docking_poses"
+    POSES_DIR.mkdir(parents=True, exist_ok=True)
+    for pdbqt_file in TEMP_DIR.glob("*_docked.pdbqt"):
+        shutil.copy(pdbqt_file, POSES_DIR / pdbqt_file.name)
+    print(f"Saved persistent poses to {POSES_DIR}")
+    # -------------------------------------------------------------
     
     # Summary (safely handle cases where all runs failed and df is empty)
     if len(out_df) > 0 and "docking_missing" in out_df.columns:
