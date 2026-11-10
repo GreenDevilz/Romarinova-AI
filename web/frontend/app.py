@@ -1664,6 +1664,85 @@ def _page_atlas():
             help="CSV of the current filtered and sorted table.",
         )
 
+def _render_shortlist_headline(df: pd.DataFrame) -> None:
+    """
+    Data-derived one-sentence reading of the shortlist.
+
+    Emits the locked headline for this dataset:
+      "**p-Cymene** leads the shortlist. All 5 shortlisted compounds pass
+       every developability check and dock within -3.0 to -4.3 kcal/mol;
+       the ranking separates them on ligand similarity support."
+
+    Falls back to shorter statements if the underlying conditions don't hold
+    (e.g. not all developability pass, ML is not a tie-band).
+    """
+    if df.empty or "final_rank" not in df.columns:
+        return
+
+    _head = df.sort_values("final_rank", na_position="last").iloc[0]
+    _top_name = row_get(_head, "compound_name", "The top compound")
+    _n_short = (
+        int(df["compound_id"].nunique()) if "compound_id" in df.columns else len(df)
+    )
+
+    # Do all shortlisted compounds pass every developability check?
+    _all_dev_ok = False
+    if "developability_score" in df.columns:
+        _dev = pd.to_numeric(df["developability_score"], errors="coerce").dropna()
+        _all_dev_ok = not _dev.empty and bool((_dev >= 0.999).all())
+
+    # Docking affinity range (raw kcal/mol, best pose per compound)
+    _aff = pd.Series(dtype=float)
+    if {"compound_id"}.issubset(df.columns) and {
+        "docking_missing", "docking_affinity_kcal_per_mol",
+    }.issubset(screened.columns):
+        _scr_ok = screened[~screened["docking_missing"].fillna(True).astype(bool)]
+        _best_aff = _scr_ok.groupby("compound_id")["docking_affinity_kcal_per_mol"].min()
+        _aff = pd.to_numeric(df["compound_id"].map(_best_aff), errors="coerce").dropna()
+    elif "docking_affinity_kcal_per_mol" in df.columns:
+        _aff = pd.to_numeric(
+            df["docking_affinity_kcal_per_mol"], errors="coerce"
+        ).dropna()
+
+    # Is ML constant across the shortlist? (tie-band)
+    _ml_distinct = 0
+    if "ML_rank_score" in df.columns:
+        _ml_distinct = int(
+            pd.to_numeric(df["ML_rank_score"], errors="coerce").dropna().nunique()
+        )
+
+    # Does similarity actually differentiate?
+    _sim_distinct = 0
+    if "similarity_support" in df.columns:
+        _sim_distinct = int(
+            pd.to_numeric(df["similarity_support"], errors="coerce").dropna().nunique()
+        )
+
+    if _all_dev_ok and len(_aff) >= 2 and _ml_distinct == 1 and _sim_distinct > 1:
+        _hi, _lo = float(_aff.max()), float(_aff.min())  # -3.0 .. -4.3
+        headline = (
+            f"**{_top_name}** leads the shortlist. "
+            f"All {_n_short} shortlisted compounds pass every developability check "
+            f"and dock within {_hi:.1f} to {_lo:.1f} kcal/mol; "
+            f"the ranking separates them on ligand similarity support."
+        )
+    elif _all_dev_ok and len(_aff) >= 2:
+        _hi, _lo = float(_aff.max()), float(_aff.min())
+        headline = (
+            f"**{_top_name}** leads the shortlist. "
+            f"All {_n_short} shortlisted compounds pass every developability check "
+            f"and dock within {_hi:.1f} to {_lo:.1f} kcal/mol."
+        )
+    elif len(_aff) >= 2:
+        _hi, _lo = float(_aff.max()), float(_aff.min())
+        headline = (
+            f"**{_top_name}** leads the shortlist; the shortlisted compounds "
+            f"dock within {_hi:.1f} to {_lo:.1f} kcal/mol."
+        )
+    else:
+        headline = f"**{_top_name}** leads the shortlist."
+
+    st.markdown(headline)
 
 def _page_shortlist():
     page_hero(
@@ -1688,6 +1767,18 @@ def _page_shortlist():
     if df.empty:
         st.warning("No compounds in the shortlist.")
         return
+
+    if "compound_id" in df.columns:
+        _before = len(df)
+        df = df.drop_duplicates("compound_id", keep="first").reset_index(drop=True)
+        _n_dup = _before - len(df)
+        if _n_dup > 0:
+            st.caption(
+                f"Collapsed {_n_dup} duplicate row(s); kept best-ranked per compound."
+            )
+
+    # ── Headline interpretation (data-derived) ─────────────────────────
+    _render_shortlist_headline(df)
 
     if {"final_rank", "ligand_only_rank"}.issubset(df.columns):
         _lo = pd.to_numeric(df["ligand_only_rank"], errors="coerce")

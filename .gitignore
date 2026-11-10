@@ -45,3 +45,5 @@ data/temp_docking/
 venv/
 web/frontend/venv/
 .streamlit/
+# Video source/renders (hosted on YouTube, not part of the repo)
+video/

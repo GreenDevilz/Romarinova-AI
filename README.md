@@ -32,8 +32,7 @@ Allowed pre-event artifacts include: empty notebooks; protocol documents; reposi
 | RDKit | TBD | BSD 3-Clause | Cheminformatics, standardization, ECFP4, PAINS/ADMET/aggregator rules |
 | scikit-learn | TBD | BSD 3-Clause | Random Forest, CV, metrics, bootstrap |
 | XGBoost | TBD | Apache 2.0 | Gradient-boosted comparator model |
-| FastAPI | TBD | MIT | API layer |
-| React + Vite | TBD | MIT | Frontend |
+| Streamlit | TBD | Apache 2.0 | Web prototype UI |
 | Plotly | TBD | MIT | Figures |
 | SQLite | TBD | Public domain | Results store |
 | ChEMBL | TBD | CC BY-SA 4.0 | Human α-glucosidase bioactivity source |
@@ -69,6 +68,11 @@ Romarinova-AI/
 │ ├── curated_chembl.csv
 │ ├── cultivar_compound_catalogue.csv
 │ └── features/
+├── video/
+│ ├── renders/
+│ ├── stock/
+│ ├── data/
+│ └── scripts/
 ├── scripts/
 │ ├── chembl_query.sql
 │ ├── run_chembl_query.py
@@ -108,12 +112,9 @@ Romarinova-AI/
 │ ├── ui_contract.json
 │ ├── api/
 │ └── frontend/
-├── figures/
-│   └── .gitkeep              # pipeline_diagram.png and sensitivity_overlap.png produced in-event
-└── demo/
-    └── .gitkeep              # final_demo_screencast.mp4 recorded in-event
-
-> `.gitkeep` files mark directories whose artifacts are produced in-event. Zero-byte media placeholders are intentionally not committed.
+│     └── app.py                 # Streamlit web prototype entry point
+└── figures/
+    └── sensitivity_overlap.png
 
 `scripts/build_artifacts.py` is the single source of truth generator in-event. `results/primary_shortlist_compound_level.csv` defines U and is the primary traceability artifact.
 
@@ -135,6 +136,20 @@ Romarinova-AI/
 11. `python scripts/fix_shortlist_metadata.py` (finalizes metadata)
 12. `python scripts/regenerate_data_contract.py && python scripts/validate_data_contract.py`
 
+## Launching the web app
+
+After installing dependencies and generating the required artifacts, launch the Streamlit web prototype from the repository root:
+
+```bash
+streamlit run web/frontend/app.py
+```
+
+The app expects generated artifacts such as `results/primary_shortlist_compound_level.csv` and related result files to be present. If Streamlit is not already installed in your environment, install it with:
+
+```bash
+pip install streamlit
+```
+
 ## Remaining gaps
 - **`docking-only` eval row** carries correct small-N flags with placeholder values pending further baseline runs.
 
@@ -143,7 +158,7 @@ Curation, split, developability, and shortlist artifacts were corrected after th
 
 ## Licence
 
-Project code: MIT (see `LICENSE`). Data and third-party libraries retain their own licences as listed above. ChEMBL data is CC BY-SA 4.0; RDKit is BSD 3-Clause; AutoDock Vina is Apache 2.0; Meeko is Apache 2.0; PDB is public domain.
+Project code: MIT (see `LICENSE`). Data and third-party libraries retain their own licences as listed above. ChEMBL data is CC BY-SA 4.0; RDKit is BSD 3-Clause; AutoDock Vina is Apache 2.0; Meeko is Apache 2.0; Streamlit is Apache 2.0; PDB is public domain.
 
 ## Disclaimer
 
